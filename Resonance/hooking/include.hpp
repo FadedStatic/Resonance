@@ -7,6 +7,4 @@
 
 namespace hooking {
 	void init(process& proc);
-
-	std::int64_t scr_thread_updateall(std::int32_t insncount);
 }

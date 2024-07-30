@@ -14,10 +14,4 @@ namespace hooking {
 		MH_CreateHook(original_scr_thread_updateall, scr_thread_updateall, reinterpret_cast<void**>(&original_scr_thread_updateall));
 		MH_EnableHook(original_scr_thread_updateall);
 	}
-	
-	std::int64_t scr_thread_updateall(std::int32_t insncount)
-	{
-		console::log<console::log_severity::info>("scr_thread_updateall(%d) called", insncount);
-		return original_scr_thread_updateall(insncount);
-	}
 }
