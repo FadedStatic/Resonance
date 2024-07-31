@@ -32,13 +32,13 @@ struct at_array_t {
 		return &data[0];
 	}
 	_Ty* end() {
-		return &data[size-1];
+		return &data[sz-1];
 	}
 	const _Ty* begin() const {
 		return &data[0];
 	}
 	const _Ty* end() const {
-		return &data[size-1];
+		return &data[sz-1];
 	}
 	const _CounterType size() const {
 		return sz;
