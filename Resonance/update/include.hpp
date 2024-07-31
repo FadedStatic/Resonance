@@ -50,9 +50,17 @@ struct at_array_t {
 	_CounterType sz, cap;
 };
 
+enum states : std::uint32_t
+{
+	idle,
+	awake,
+	off,
+};
 struct scrThread {
 	char pad_0[0x8]; // 0x0
 	struct {
+		std::uint32_t m_thread_id, m_script_hash;
+		states m_state;
 
 	} m_ctx;
 };
