@@ -7,7 +7,8 @@ int main()
 {
 	process main_proc = process();
 	console::init();
-	hooking::init(main_proc);
+	const auto threads = reinterpret_cast<at_array_t<void*>*>(get_base_address() + sm_threads);
+	console::log<console::log_severity::info>("nThreads: %l, threadCap: %l, threadLoc: %llX", threads->size(), threads->capacity(), threads->data);
 	return 0;
 }
 

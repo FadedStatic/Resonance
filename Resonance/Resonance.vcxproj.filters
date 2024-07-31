@@ -66,7 +66,9 @@
     <ClCompile Include="hooking\hooking.cpp">
       <Filter>hooking</Filter>
     </ClCompile>
-    <ClCompile Include="console\console.cpp" />
+    <ClCompile Include="console\console.cpp">
+      <Filter>console</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\include.hpp">

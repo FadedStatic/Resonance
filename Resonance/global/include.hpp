@@ -17,6 +17,14 @@ namespace global {
 			object = obj;
 		}
 
+		void operator=(const _Ty obj) {
+			set(obj);
+		}
+
+		operator _Ty() {
+			return get();
+		}
+
 		shared_var(_Ty obj) : object(obj) {}
 	};
 
