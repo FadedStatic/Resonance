@@ -2,14 +2,19 @@
 #include <thread>
 #include <Windows.h>
 #include "../hooking/include.hpp"
+#include "../invoker.hpp"
 
 using scr_thread_run_t = void(__thiscall*)(void*);
 
-std::uintptr_t* p_scr_thread_run_buf{ nullptr };
+std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 
 void __stdcall callback(void* scr_thread_obj) {
-	console::log<log_severity::success>("Calling from `callback`");
-	reinterpret_cast<scr_thread_run_t>(p_scr_thread_run_buf)(scr_thread_obj);
+	console::log<log_severity::warn>("Invoking ´GET_PLAYER_PED´");
+
+	const auto ped = invoker::invoke<int, 6261152021733871000>(-1);
+	console::log<log_severity::success>("Invoked ´GET_PLAYER_PED´, result: %d", ped);
+
+	reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(scr_thread_obj);
 }
 
 
@@ -35,26 +40,8 @@ void main(HMODULE dll)
 		console::log<log_severity::info>("Thread hash: %X", thread->m_script_hash);
 	}
 
-	const auto vtable = *reinterpret_cast<std::uintptr_t***>(persistent_thread);
-	const auto p_scr_thread_run = &vtable[2];
-
-	p_scr_thread_run_buf = *p_scr_thread_run;	
-	auto oldpf{ 0ul };
-	VirtualProtect(p_scr_thread_run, sizeof std::size_t, PAGE_EXECUTE_READWRITE, &oldpf);
-
-	console::log<log_severity::warn>("Overwriting scrThread::Run virtual function table entry with callback address: [%p]", &callback);
-	*p_scr_thread_run = reinterpret_cast<std::uintptr_t*>(&callback);
-
-	console::log<log_severity::success>("Successfully overwrote virtual function table entry at: [%p]", p_scr_thread_run);
-
-	std::this_thread::sleep_for(std::chrono::seconds(10));
-
-	console::log<log_severity::warn>("Restoring virtual function table entry");
-	*p_scr_thread_run = p_scr_thread_run_buf;
-
-	VirtualProtect(p_scr_thread_run, sizeof std::size_t, oldpf, &oldpf);
-	console::log<log_severity::success>("Restored!");
-
+	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&callback), orig_scr_thread_run_addr};
+	std::this_thread::sleep_for(std::chrono::seconds(5));
 	FreeLibrary(dll);
 }
 

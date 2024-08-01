@@ -34,6 +34,9 @@
     <Filter Include="update">
       <UniqueIdentifier>{1352de4b-cab8-4c50-9336-47ce0546a18d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="invoker">
+      <UniqueIdentifier>{6fd8ef6b-f43d-4de5-9604-6dd873a16390}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main\main.cpp">
@@ -115,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="update\include.hpp">
       <Filter>update</Filter>
+    </ClInclude>
+    <ClInclude Include="invoker.hpp">
+      <Filter>invoker</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
