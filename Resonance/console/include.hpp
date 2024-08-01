@@ -9,8 +9,7 @@
 
 namespace console
 {
-	extern void init();
-
+	void init();
 	enum class log_severity : int {
 		info,
 		warn,

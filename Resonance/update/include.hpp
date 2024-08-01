@@ -57,10 +57,10 @@ enum states : std::uint32_t
 	off,
 };
 struct scrThread {
-	char pad_0[0x8]; // 0x0
-	struct {
-		std::uint32_t m_thread_id, m_script_hash;
-		states m_state;
+	std::uintptr_t** vtable_ptr; // 0x0, vtable ptr
 
-	} m_ctx;
+	std::uint32_t m_thread_id; // 0x8
+	std::uint32_t m_script_hash; // 0x10
+	states m_state; // 0x18
+
 };
