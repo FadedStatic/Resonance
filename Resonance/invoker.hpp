@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vector>
 
-const std::uint64_t base = reinterpret_cast<std::uint64_t>(GetModuleHandle(NULL));
+const std::uint64_t base = reinterpret_cast<std::uint64_t>(GetModuleHandleA(nullptr));
 
 namespace invoker {
 
@@ -91,20 +91,23 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/  
 
-	template<typename RetT, std::size_t NativeHash, typename... Args>
-	RetT invoke(Args&&... args) {
+	template<typename RetT, std::intptr_t NativeHash, typename... Args>
+	RetT FORCEINLINE invoke(Args&&... args) {
 		static const auto native_resolver{ base + invoker::native_resolver_rva };
 		static const auto native_table{ base + invoker::native_table_rva };
 
-		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
-		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
+		console::log<log_severity::info>("Native resolver address: %llX", native_resolver);
+		console::log<log_severity::info>("Native table address: %llx", native_table);
 
-		if (native_handler == nullptr) {
+		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
+		console::log<log_severity::info>("Native handler address: %llX", native_handler_addr);
+		if (!native_handler_addr) {
 			console::log<log_severity::error>("Failed to resolve native hash: %llX", NativeHash);
 			return RetT{};
 		}
 
-		console::log<log_severity::success>("Successfully resolved native hash to native handler: [%llX]", native_handler, NativeHash);
+		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
+		console::log<log_severity::success>("Successfully resolved native hash to native handler: [%p]", native_handler);
 
 		invoker::native_call_ctx_t ctx{};
 		(ctx.push_arg(std::forward<Args>(args)), ...);

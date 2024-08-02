@@ -7,14 +7,17 @@
 using scr_thread_run_t = void(__thiscall*)(void*);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
+std::once_flag flag;
 
 void __stdcall callback(void* scr_thread_obj) {
-	console::log<log_severity::warn>("Invoking ´GET_PLAYER_PED´");
+	std::call_once(flag, [&] {
+		console::log<log_severity::warn>("Invoking GET_PLAYER_PED");
 
-	const auto ped = invoker::invoke<int, 6261152021733871000>(-1);
-	console::log<log_severity::success>("Invoked ´GET_PLAYER_PED´, result: %d", ped);
+		const auto ped = invoker::invoke<int, 0x43A66C31C68491C0>(-1);
 
-	reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(scr_thread_obj);
+		console::log<log_severity::success>("Invoked GET_PLAYER_PED, result: %d", ped);
+		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(scr_thread_obj);
+	});
 }
 
 
@@ -25,7 +28,7 @@ void main(HMODULE dll)
 
 	const auto base_addr = get_base_address();
 
-	console.log<log_severity::info>("Base address: %X", base_addr);
+	console.log<log_severity::info>("Base address: %llX", base_addr);
 	const auto threads = at_array_t<scrThread*>(reinterpret_cast<void*>(base_addr + sm_threads));
 
 	scrThread* persistent_thread{ nullptr };
