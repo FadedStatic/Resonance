@@ -10,11 +10,6 @@ constexpr auto sm_threads = 0x2f24630;
 #pragma pack(push, 8)
 template <typename _Ty, class _CounterType = std::uint16_t>
 struct at_array_t {
-	at_array_t() {
-		data = nullptr;
-		sz = 0;
-		cap = 0;
-	}
 	at_array_t(_Ty* data_ptr, _CounterType  _size, _CounterType _cap) : data(data_ptr),sz(_size),cap(_cap) {}
 	at_array_t(const void* data_ptr) {
 		auto* data_ptr_ = reinterpret_cast<const at_array_t*>(data_ptr);
@@ -46,8 +41,8 @@ struct at_array_t {
 	const _CounterType capacity() const {
 		return cap;
 	}
-	_Ty* data;
-	_CounterType sz, cap;
+	_Ty* data{ nullptr };
+	_CounterType sz{ 0 }, cap{0};
 };
 
 enum states : std::uint32_t

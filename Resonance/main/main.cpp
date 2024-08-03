@@ -9,13 +9,37 @@ using scr_thread_run_t = void(__thiscall*)(void*);
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
+#pragma pack(push, 1)
+class scr_vector_t
+{
+public:
+	scr_vector_t() = default;
+
+	scr_vector_t(float x, float y, float z) :
+		x(x), y(y), z(z)
+	{}
+public:
+	float x{};
+private:
+	char m_padding1[0x04];
+public:
+	float y{};
+private:
+	char m_padding2[0x04];
+public:
+	float z{};
+private:
+	char m_padding3[0x04];
+};
+
 void __stdcall callback(void* scr_thread_obj) {
 	std::call_once(flag, [&] {
-		console::log<log_severity::warn>("Invoking GET_PLAYER_PED");
 
-		const auto ped = invoker::invoke<int, 0x43A66C31C68491C0>(-1);
+		const auto ped = invoker::invoke<int, 0x56E414973C2A8C0E>(-1);
+		scr_vector_t coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB>(ped, true);
 
-		console::log<log_severity::success>("Invoked GET_PLAYER_PED, result: %d", ped);
+		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
+
 		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(scr_thread_obj);
 	});
 }

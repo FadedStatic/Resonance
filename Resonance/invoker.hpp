@@ -96,11 +96,11 @@ namespace invoker {
 		static const auto native_resolver{ base + invoker::native_resolver_rva };
 		static const auto native_table{ base + invoker::native_table_rva };
 
-		console::log<log_severity::info>("Native resolver address: %llX", native_resolver);
-		console::log<log_severity::info>("Native table address: %llx", native_table);
 
+		console::log<log_severity::warn>("Native invocation for native hash: [%llX]", NativeHash);
+		console::log<log_severity::warn>("Calling native hash resolver...");
 		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
-		console::log<log_severity::info>("Native handler address: %llX", native_handler_addr);
+
 		if (!native_handler_addr) {
 			console::log<log_severity::error>("Failed to resolve native hash: %llX", NativeHash);
 			return RetT{};
@@ -111,9 +111,9 @@ namespace invoker {
 
 		invoker::native_call_ctx_t ctx{};
 		(ctx.push_arg(std::forward<Args>(args)), ...);
-		console::log<log_severity::warn>("Calling native handler");
 		
 		native_handler(&ctx);
+		console::log<log_severity::success>("Native invoked");
 
 		if constexpr (!std::is_same_v<void, RetT>)
 		{
