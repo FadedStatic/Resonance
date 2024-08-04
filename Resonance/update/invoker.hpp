@@ -6,10 +6,6 @@
 const std::uint64_t base = reinterpret_cast<std::uint64_t>(GetModuleHandleA(nullptr));
 
 namespace invoker {
-
-	constexpr auto native_resolver_rva = 0x1633EF8;
-	constexpr auto native_table_rva = 0x2F22540;
-
 	class internal_native_call_ctx_t
 	{
 	public:
@@ -65,7 +61,7 @@ namespace invoker {
 		std::int32_t m_data_count;
 		std::uint32_t m_data[48];
 	};
-	static_assert(sizeof(internal_native_call_ctx_t) == 0xE0);
+	static_assert(sizeof(internal_native_call_ctx_t) == 224);
 
 	class native_call_ctx_t : public internal_native_call_ctx_t
 	{
@@ -91,10 +87,10 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/  
 
-	template<typename RetT, std::intptr_t NativeHash, typename... Args>
+	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
-		static const auto native_resolver{ base + invoker::native_resolver_rva };
-		static const auto native_table{ base + invoker::native_table_rva };
+		static const auto native_resolver{ base + native_resolver_rva };
+		static const auto native_table{ base + native_table_rva };
 
 
 		console::log<log_severity::warn>("Native invocation for native hash: [%llX]", NativeHash);

@@ -5,7 +5,8 @@
 static auto get_base_address() -> std::uintptr_t {
 	return reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
 }
-
+constexpr auto native_resolver_rva = 0x1633EF8;
+constexpr auto native_table_rva = 0x2F22540;
 constexpr auto sm_threads = 0x2f24630;
 #pragma pack(push, 8)
 template <typename _Ty, class _CounterType = std::uint16_t>
@@ -59,3 +60,45 @@ struct scrThread {
 	states m_state; // 0x18
 
 };
+
+
+#pragma pack(push, 1)
+class scr_vector_t
+{
+public:
+	scr_vector_t() = default;
+
+	scr_vector_t(float x, float y, float z) :
+		x(x), y(y), z(z)
+	{}
+public:
+	float x{};
+private:
+	char m_padding1[0x04];
+public:
+	float y{};
+private:
+	char m_padding2[0x04];
+public:
+	float z{};
+private:
+	char m_padding3[0x04];
+};
+#pragma pack(pop)
+
+using Void = void;
+using Any = std::uint32_t;
+using Hash = std::uint32_t;
+using Entity = std::uint64_t;
+using Player = std::int32_t;
+using Ped = Entity;
+using Vehicle = Entity;
+using Cam = std::int32_t;
+using Object = Entity;
+using Pickup = Object;
+using Blip = std::int32_t;
+using Camera = Entity;
+using ScrHandle = Entity;
+using FireId = Entity;
+using Interior = Entity;
+using Vector3 = scr_vector_t;

@@ -148,7 +148,7 @@
     <ClInclude Include="global\include.hpp" />
     <ClInclude Include="hooking\include.hpp" />
     <ClInclude Include="input\include.hpp" />
-    <ClInclude Include="invoker.hpp" />
+    <ClInclude Include="update\invoker.hpp" />
     <ClInclude Include="libs\minhook\buffer.hpp" />
     <ClInclude Include="libs\minhook\hde\hde32.hpp" />
     <ClInclude Include="libs\minhook\hde\hde64.hpp" />
@@ -160,6 +160,7 @@
     <ClInclude Include="libs\scanner\scanner.hpp" />
     <ClInclude Include="ui\include.hpp" />
     <ClInclude Include="update\include.hpp" />
+    <ClInclude Include="update\natives.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
