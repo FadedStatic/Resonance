@@ -14,7 +14,7 @@ struct hk_scr_thread_run_t {
 	hk_scr_thread_run_t(scrThread* _thread, std::uintptr_t* callback, std::uintptr_t*& scr_thread_run_buf) noexcept : thread{ _thread } {
 		const auto vtable = *reinterpret_cast<std::uintptr_t***>(this->thread);
 		
-		this->scr_thread_run_ptr_addr = &vtable[2];
+		this->scr_thread_run_ptr_addr = &vtable[3];
 		this->orig_scr_thread_run_addr = *scr_thread_run_ptr_addr;
 		scr_thread_run_buf = *scr_thread_run_ptr_addr;
 		

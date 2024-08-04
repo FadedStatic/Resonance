@@ -4,20 +4,17 @@
 #include "../hooking/include.hpp"
 #include "../update/natives.hpp"
 
-using scr_thread_run_t = void(__thiscall*)(void*);
+using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
-std::once_flag flag;
+std::once_flag flag; 
 
-void __stdcall callback(void* rcx) {
-	std::call_once(flag, [&] {
+std::uint32_t  __stdcall callback(void* self, int ops) {
+	const auto ped = PLAYER::GET_PLAYER_PED(-1);
+	const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
 
-		const auto ped = PLAYER::GET_PLAYER_PED(-1);
-		const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
-
-		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
-		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(rcx);
-	});
+	console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
+	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(self, ops);
 }
 
 

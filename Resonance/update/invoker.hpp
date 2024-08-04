@@ -87,14 +87,12 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/  
 
+#define USE_HANDLERS TRUE
 	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
+#if USE_HANDLERS == FALSE
 		static const auto native_resolver{ base + native_resolver_rva };
 		static const auto native_table{ base + native_table_rva };
-
-
-		console::log<log_severity::warn>("Native invocation for native hash: [%llX]", NativeHash);
-		console::log<log_severity::warn>("Calling native hash resolver...");
 		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
 
 		if (!native_handler_addr) {
@@ -103,14 +101,15 @@ namespace invoker {
 		}
 
 		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
-		console::log<log_severity::success>("Successfully resolved native hash to native handler: [%p]", native_handler);
+#else
+		static auto base = reinterpret_cast<std::uint64_t>(GetModuleHandleA(nullptr));
+		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(base + NativeHandler);
+#endif
 
 		invoker::native_call_ctx_t ctx{};
 		(ctx.push_arg(std::forward<Args>(args)), ...);
 		
 		native_handler(&ctx);
-		console::log<log_severity::success>("Native invoked");
-
 		if constexpr (!std::is_same_v<void, RetT>)
 		{
 			if (const auto ret_val = ctx.get_return_value<RetT>(); ret_val != nullptr)
@@ -118,6 +117,5 @@ namespace invoker {
 			console::log<log_severity::error>("Return value returned from native handler is `nullptr`");
 			return RetT{};
 		}
-
 	}
 }

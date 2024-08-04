@@ -119,8 +119,11 @@
     <ClInclude Include="update\include.hpp">
       <Filter>update</Filter>
     </ClInclude>
-    <ClInclude Include="invoker.hpp">
-      <Filter>invoker</Filter>
+    <ClInclude Include="update\invoker.hpp">
+      <Filter>update</Filter>
+    </ClInclude>
+    <ClInclude Include="update\natives.hpp">
+      <Filter>update</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
