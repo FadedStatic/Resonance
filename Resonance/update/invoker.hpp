@@ -61,6 +61,7 @@ namespace invoker {
 		std::int32_t m_data_count;
 		std::uint32_t m_data[48];
 	};
+	static_assert(sizeof(internal_native_call_ctx_t) == 224);
 
 	class native_call_ctx_t : public internal_native_call_ctx_t
 	{

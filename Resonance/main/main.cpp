@@ -12,10 +12,8 @@ std::once_flag flag;
 void __stdcall callback(void* rcx) {
 	std::call_once(flag, [&] {
 
-		//const auto ped = PLAYER::GET_PLAYER_PED(-1);
-		//const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
-		const auto ped = invoker::invoke<int, 0x56E414973C2A8C0E, 0x0>(-1);
-		const auto coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB,  0x0>(ped, true);
+		const auto ped = PLAYER::GET_PLAYER_PED(-1);
+		const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
 
 		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
 		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(rcx);

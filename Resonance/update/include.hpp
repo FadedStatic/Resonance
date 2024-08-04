@@ -84,7 +84,7 @@ public:
 private:
 	char m_padding3[0x04];
 };
-
+#pragma pack(pop)
 
 using Void = void;
 using Any = std::uint32_t;
