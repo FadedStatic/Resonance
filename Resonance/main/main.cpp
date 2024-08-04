@@ -2,50 +2,22 @@
 #include <thread>
 #include <Windows.h>
 #include "../hooking/include.hpp"
-#include "../invoker.hpp"
+#include "../update/natives.hpp"
 
 using scr_thread_run_t = void(__thiscall*)(void*);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
-#pragma pack(push, 1)
-class scr_vector_t
-{
-public:
-	scr_vector_t() = default;
-
-	scr_vector_t(float x, float y, float z) :
-		x(x), y(y), z(z)
-	{}
-public:
-	float x{};
-private:
-	char m_padding1[0x04];
-public:
-	float y{};
-private:
-	char m_padding2[0x04];
-public:
-	float z{};
-private:
-	char m_padding3[0x04];
-};
-
 void __stdcall callback(void* rcx) {
 	std::call_once(flag, [&] {
 
-		const auto ped = invoker::invoke<int, 0x56E414973C2A8C0E>(-1);
-		const auto coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB>(ped, true);
-		
+		//const auto ped = PLAYER::GET_PLAYER_PED(-1);
+		//const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
+		const auto ped = invoker::invoke<int, 0x56E414973C2A8C0E, 0x0>(-1);
+		const auto coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB,  0x0>(ped, true);
+
 		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
-		console::log<log_severity::warn>("Giving local player machine weapon");
-
-		constexpr auto weapon_hash{ 0u };
-		invoker::invoke<void, 0x3C0F448853B71C92>(ped, weapon_hash, true);
-
-		console::log<log_severity::success>("Gave local player machine weapon");
-
 		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(rcx);
 	});
 }
@@ -58,7 +30,7 @@ void main(HMODULE dll)
 
 	const auto base_addr = get_base_address();
 
-	console.log<log_severity::info>("Base address: %llX", base_addr);
+	console::log<log_severity::info>("Base address: %llX", base_addr);
 	const auto threads = at_array_t<scrThread*>(reinterpret_cast<void*>(base_addr + sm_threads));
 
 	scrThread* persistent_thread{ nullptr };
