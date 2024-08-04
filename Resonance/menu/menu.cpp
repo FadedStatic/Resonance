@@ -1,9 +1,9 @@
-#include "include.hpp"
+#include "menu.hpp"
 
 void menu::render()
 {
 
-	if (!global::menu_gen::menu_open)
+	if (!global::menu::menu_open)
 		return;
 	// Draw Header
 	draw_rect({ 0.7f, 0.32f }, { 0.23f, 0.09f }, color(255, 255, 255, 255));

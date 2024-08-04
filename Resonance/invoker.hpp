@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <vector>
 
-#include "include.hpp"
-#include "../console/include.hpp"
+#include "../console/console.hpp"
+#include "../global/global.hpp"
 
 const std::uint64_t base = reinterpret_cast<std::uint64_t>(GetModuleHandleA(nullptr));
 

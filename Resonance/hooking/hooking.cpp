@@ -1,4 +1,4 @@
-#include "include.hpp"
+#include "hooking.hpp"
 
 namespace hooking {
 	using scr_thread_updateall_t = std::int64_t(*)(std::int32_t);
