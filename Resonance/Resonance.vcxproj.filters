@@ -7,9 +7,6 @@
     <Filter Include="libs">
       <UniqueIdentifier>{f002d331-8fd5-4085-85eb-1522ea95d496}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ui">
-      <UniqueIdentifier>{c577f48e-bef9-4393-b504-0955e4c243dc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="global">
       <UniqueIdentifier>{1c9c881c-0435-46c8-b224-ef88ad1ea218}</UniqueIdentifier>
     </Filter>
@@ -37,13 +34,16 @@
     <Filter Include="invoker">
       <UniqueIdentifier>{6fd8ef6b-f43d-4de5-9604-6dd873a16390}</UniqueIdentifier>
     </Filter>
+    <Filter Include="menu">
+      <UniqueIdentifier>{c577f48e-bef9-4393-b504-0955e4c243dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main\main.cpp">
       <Filter>main</Filter>
     </ClCompile>
-    <ClCompile Include="ui\ui.cpp">
-      <Filter>ui</Filter>
+    <ClCompile Include="ui\menu.cpp">
+      <Filter>menu</Filter>
     </ClCompile>
     <ClCompile Include="libs\scanner\scanner.cpp">
       <Filter>libs\scanner</Filter>
@@ -78,7 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\include.hpp">
-      <Filter>ui</Filter>
+      <Filter>menu</Filter>
     </ClInclude>
     <ClInclude Include="global\include.hpp">
       <Filter>global</Filter>

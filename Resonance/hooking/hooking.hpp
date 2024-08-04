@@ -1,9 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include "../console/include.hpp"
+#include "../console/console.hpp"
 #include "../libs/scanner/scanner.hpp"
-#include "../update/include.hpp"
+#include "../update/update.hpp"
 
 
 struct hk_scr_thread_run_t {

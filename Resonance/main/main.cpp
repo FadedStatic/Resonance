@@ -1,8 +1,8 @@
 #include <iostream>
 #include <thread>
 #include <Windows.h>
-#include "../hooking/include.hpp"
-#include "../ui/include.hpp"
+#include "../hooking/hooking.hpp"
+#include "../menu/menu.hpp"
 
 menu main_menu;
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
@@ -10,7 +10,7 @@ using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
-std::uint32_t  __stdcall callback(void* self, int ops) {
+std::uint32_t  __stdcall callback(void* _this, int ops) {
 	const auto ped = PLAYER::GET_PLAYER_PED(-1);
 	const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
 
@@ -18,22 +18,21 @@ std::uint32_t  __stdcall callback(void* self, int ops) {
 	main_menu.render();
 
 	if (GetAsyncKeyState(VK_F5) & 0x8000)
-		global::menu_gen::menu_open = !global::menu_gen::menu_open;
+		global::menu::menu_open = !global::menu::menu_open;
 
 	if (GetAsyncKeyState(VK_END) & 0x8000)
-		global::menu_gen::menu_exit = true;
+		global::menu::menu_exit = true;
 
-	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(self, ops);
+	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(_this, ops);
 }
 
 
 void main(HMODULE dll)
 {
 	console console{};
-	const auto base_addr = get_base_address();
 
-	console::log<log_severity::info>("Base address: %llX", base_addr);
-	const auto threads = at_array_t<scrThread*>(reinterpret_cast<void*>(base_addr + sm_threads));
+	console::log<log_severity::info>("Base address: %llX", global::base);
+	const auto threads = at_array_t<scrThread*>(reinterpret_cast<void*>(global::base + global::native_resolver::sm_threads));
 
 	scrThread* persistent_thread{ nullptr };
 	
@@ -48,7 +47,7 @@ void main(HMODULE dll)
 	}
 
 	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&callback), orig_scr_thread_run_addr};
-	while(!global::menu_gen::menu_exit) {}
+	while(!global::menu::menu_exit) {}
 	FreeLibrary(dll);
 }
 

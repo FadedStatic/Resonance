@@ -2,12 +2,7 @@
 #include <cstdint>
 #include <Windows.h>
 
-static auto get_base_address() -> std::uintptr_t {
-	return reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
-}
-constexpr auto native_resolver_rva = 0x1633EF8;
-constexpr auto native_table_rva = 0x2F22540;
-constexpr auto sm_threads = 0x2f24630;
+
 #pragma pack(push, 8)
 template <typename _Ty, class _CounterType = std::uint16_t>
 struct at_array_t {

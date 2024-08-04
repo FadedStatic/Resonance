@@ -1,19 +1,21 @@
 #pragma once
 #include <shared_mutex>
-struct color
-{
-	int r, g, b, a;
-	explicit color(const std::uint32_t col)
-	{
-		r = (col >> 24) & 0xFF;
-		g = (col >> 16) & 0xFF;
-		b = (col >> 8) & 0xFF;
-		a = col & 0xFF;
+#include <atomic>
+
+namespace global {
+	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
+
+	namespace menu {
+		inline std::atomic_bool menu_open{ false };
+		inline std::atomic_bool menu_exit;
 	}
 
-	explicit color(const int r, const int g, const int b, const int a) : r(r), g(g), b(b), a(a) {}
-};
-namespace global {
+	namespace native_resolver {
+		constexpr auto native_resolver_rva = 0x1633EF8;
+		constexpr auto native_table_rva = 0x2F22540;
+		constexpr auto sm_threads = 0x2f24630;
+	}
+
 	template<typename _Ty>
 	struct shared_var {
 		std::shared_mutex obj_mutex;
@@ -39,11 +41,5 @@ namespace global {
 
 		shared_var(_Ty obj) : object(obj) {}
 	};
-
-	namespace menu_gen
-	{
-		extern shared_var<bool> menu_open;
-		extern shared_var<bool> menu_exit;
-	}
 
 }

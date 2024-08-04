@@ -132,7 +132,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="console\console.cpp" />
-    <ClCompile Include="global\include.cpp" />
     <ClCompile Include="hooking\hooking.cpp" />
     <ClCompile Include="input\input.cpp" />
     <ClCompile Include="libs\minhook\buffer.cpp" />
@@ -142,14 +141,15 @@
     <ClCompile Include="libs\minhook\trampoline.cpp" />
     <ClCompile Include="libs\scanner\scanner.cpp" />
     <ClCompile Include="main\main.cpp" />
-    <ClCompile Include="ui\ui.cpp" />
+    <ClCompile Include="menu\menu.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="console\include.hpp" />
-    <ClInclude Include="global\include.hpp" />
-    <ClInclude Include="hooking\include.hpp" />
-    <ClInclude Include="input\include.hpp" />
-    <ClInclude Include="update\invoker.hpp" />
+    <ClInclude Include="console\console.hpp" />
+    <ClInclude Include="global\global.hpp" />
+    <ClInclude Include="hooking\hooking.hpp" />
+    <ClInclude Include="input\input.hpp" />
+    <ClInclude Include="invoker\invoker.hpp" />
+    <ClInclude Include="menu\menu.hpp" />
     <ClInclude Include="libs\minhook\buffer.hpp" />
     <ClInclude Include="libs\minhook\hde\hde32.hpp" />
     <ClInclude Include="libs\minhook\hde\hde64.hpp" />
@@ -159,8 +159,7 @@
     <ClInclude Include="libs\minhook\MinHook.hpp" />
     <ClInclude Include="libs\minhook\trampoline.hpp" />
     <ClInclude Include="libs\scanner\scanner.hpp" />
-    <ClInclude Include="ui\include.hpp" />
-    <ClInclude Include="update\include.hpp" />
+    <ClInclude Include="update\update.hpp" />
     <ClInclude Include="update\natives.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
