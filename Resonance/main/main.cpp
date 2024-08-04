@@ -32,15 +32,21 @@ private:
 	char m_padding3[0x04];
 };
 
-void __stdcall callback(void* scr_thread_obj) {
+void __stdcall callback(void* rcx) {
 	std::call_once(flag, [&] {
 
 		const auto ped = invoker::invoke<int, 0x56E414973C2A8C0E>(-1);
-		scr_vector_t coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB>(ped, true);
-
+		const auto coords = invoker::invoke<scr_vector_t, 0xD1A6A821F5AC81DB>(ped, true);
+		
 		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
+		console::log<log_severity::warn>("Giving local player machine weapon");
 
-		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(scr_thread_obj);
+		constexpr auto weapon_hash{ 0u };
+		invoker::invoke<void, 0x3C0F448853B71C92>(ped, weapon_hash, true);
+
+		console::log<log_severity::success>("Gave local player machine weapon");
+
+		reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(rcx);
 	});
 }
 

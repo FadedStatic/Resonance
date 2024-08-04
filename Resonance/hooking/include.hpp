@@ -10,7 +10,6 @@ struct hk_scr_thread_run_t {
 	scrThread* thread;
 	std::uintptr_t** scr_thread_run_ptr_addr;
 	std::uintptr_t* orig_scr_thread_run_addr;
-	unsigned long oldpf{ };
 
 	hk_scr_thread_run_t(scrThread* _thread, std::uintptr_t* callback, std::uintptr_t*& scr_thread_run_buf) noexcept : thread{ _thread } {
 		const auto vtable = *reinterpret_cast<std::uintptr_t***>(this->thread);
@@ -19,23 +18,18 @@ struct hk_scr_thread_run_t {
 		this->orig_scr_thread_run_addr = *scr_thread_run_ptr_addr;
 		scr_thread_run_buf = *scr_thread_run_ptr_addr;
 		
-		VirtualProtect(scr_thread_run_ptr_addr, sizeof std::size_t, PAGE_EXECUTE_READWRITE, &oldpf);
 
 		console::log<log_severity::warn>("Overwriting scrThread::Run virtual function table entry with callback address: [%p]", &callback);
 		*scr_thread_run_ptr_addr = callback;
 
 		console::log<log_severity::success>("Successfully overwrote virtual function table entry at: [%p]", scr_thread_run_ptr_addr);
-		VirtualProtect(scr_thread_run_ptr_addr, sizeof std::size_t, oldpf, &oldpf);
 
 	}
 
 	~hk_scr_thread_run_t() {
-		VirtualProtect(scr_thread_run_ptr_addr, sizeof std::size_t, PAGE_EXECUTE_READWRITE, &oldpf);
 
 		console::log<log_severity::warn>("Restoring virtual function table entry");
 		*scr_thread_run_ptr_addr = orig_scr_thread_run_addr;
-
-		VirtualProtect(scr_thread_run_ptr_addr, sizeof std::size_t, oldpf, &oldpf);
 		console::log<log_severity::success>("Restored!");
 	}
 };
