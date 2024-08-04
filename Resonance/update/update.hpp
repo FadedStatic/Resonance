@@ -7,6 +7,7 @@
 template <typename _Ty, class _CounterType = std::uint16_t>
 struct at_array_t {
 	at_array_t(_Ty* data_ptr, _CounterType  _size, _CounterType _cap) : data(data_ptr),sz(_size),cap(_cap) {}
+
 	at_array_t(const void* data_ptr) {
 		auto* data_ptr_ = reinterpret_cast<const at_array_t*>(data_ptr);
 		data = data_ptr_->data;
