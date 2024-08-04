@@ -8,10 +8,12 @@ static auto get_base_address() -> std::uintptr_t {
 constexpr auto native_resolver_rva = 0x1633EF8;
 constexpr auto native_table_rva = 0x2F22540;
 constexpr auto sm_threads = 0x2f24630;
+
 #pragma pack(push, 8)
 template <typename _Ty, class _CounterType = std::uint16_t>
 struct at_array_t {
 	at_array_t(_Ty* data_ptr, _CounterType  _size, _CounterType _cap) : data(data_ptr),sz(_size),cap(_cap) {}
+	
 	at_array_t(const void* data_ptr) {
 		auto* data_ptr_ = reinterpret_cast<const at_array_t*>(data_ptr);
 		data = data_ptr_->data;
