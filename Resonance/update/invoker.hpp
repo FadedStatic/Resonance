@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <vector>
 
+#include "include.hpp"
+#include "../console/include.hpp"
+
 const std::uint64_t base = reinterpret_cast<std::uint64_t>(GetModuleHandleA(nullptr));
 
 namespace invoker {
@@ -87,7 +90,7 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/  
 
-#define USE_HANDLERS TRUE
+#define USE_HANDLERS FALSE
 	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
 #if USE_HANDLERS == FALSE

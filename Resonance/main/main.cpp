@@ -2,27 +2,34 @@
 #include <thread>
 #include <Windows.h>
 #include "../hooking/include.hpp"
-#include "../update/natives.hpp"
+#include "../ui/include.hpp"
 
+menu main_menu;
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
-std::once_flag flag; 
+std::once_flag flag;
 
 std::uint32_t  __stdcall callback(void* self, int ops) {
 	const auto ped = PLAYER::GET_PLAYER_PED(-1);
 	const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
 
 	console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
+	main_menu.render();
+
+	if (GetAsyncKeyState(VK_F5) & 0x8000)
+		global::menu_gen::menu_open = !global::menu_gen::menu_open;
+
+	if (GetAsyncKeyState(VK_END) & 0x8000)
+		global::menu_gen::menu_exit = true;
+
 	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(self, ops);
 }
 
 
 void main(HMODULE dll)
 {
-	process main_proc{};
 	console console{};
-
 	const auto base_addr = get_base_address();
 
 	console::log<log_severity::info>("Base address: %llX", base_addr);
@@ -41,7 +48,7 @@ void main(HMODULE dll)
 	}
 
 	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&callback), orig_scr_thread_run_addr};
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	while(!global::menu_gen::menu_exit) {}
 	FreeLibrary(dll);
 }
 

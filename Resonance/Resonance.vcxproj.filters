@@ -72,6 +72,9 @@
     <ClCompile Include="console\console.cpp">
       <Filter>console</Filter>
     </ClCompile>
+    <ClCompile Include="global\include.cpp">
+      <Filter>global</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ui\include.hpp">

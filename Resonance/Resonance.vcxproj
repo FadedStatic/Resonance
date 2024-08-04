@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="console\console.cpp" />
+    <ClCompile Include="global\include.cpp" />
     <ClCompile Include="hooking\hooking.cpp" />
     <ClCompile Include="input\input.cpp" />
     <ClCompile Include="libs\minhook\buffer.cpp" />

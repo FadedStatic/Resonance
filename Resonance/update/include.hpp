@@ -45,6 +45,7 @@ struct at_array_t {
 	_Ty* data{ nullptr };
 	_CounterType sz{ 0 }, cap{0};
 };
+#pragma pack(pop)
 
 enum states : std::uint32_t
 {

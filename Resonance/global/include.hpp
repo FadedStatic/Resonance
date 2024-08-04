@@ -1,6 +1,18 @@
 #pragma once
 #include <shared_mutex>
+struct color
+{
+	int r, g, b, a;
+	explicit color(const std::uint32_t col)
+	{
+		r = (col >> 24) & 0xFF;
+		g = (col >> 16) & 0xFF;
+		b = (col >> 8) & 0xFF;
+		a = col & 0xFF;
+	}
 
+	explicit color(const int r, const int g, const int b, const int a) : r(r), g(g), b(b), a(a) {}
+};
 namespace global {
 	template<typename _Ty>
 	struct shared_var {
@@ -30,6 +42,8 @@ namespace global {
 
 	namespace menu_gen
 	{
-		shared_var<bool> menu_open{ false };
+		extern shared_var<bool> menu_open;
+		extern shared_var<bool> menu_exit;
 	}
+
 }
