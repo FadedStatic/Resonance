@@ -88,23 +88,23 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/
 
-#define USE_HANDLERS TRUE
+	constexpr auto USE_HANDLERS = true;
 	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
-#if USE_HANDLERS == FALSE
-		const auto native_resolver{ global::base + global::native_resolver::native_resolver_rva };
-		const auto native_table{ global::base + global::native_resolver::native_table_rva };
-		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
+		native_conv_t native_handler{};
+		if constexpr(USE_HANDLERS) {
+			const auto native_resolver{ global::base + global::native_resolver::native_resolver_rva };
+			const auto native_table{ global::base + global::native_resolver::native_table_rva };
+			const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
 
-		if (!native_handler_addr) {
-			console::log<log_severity::error>("Failed to resolve native hash: %llX", NativeHash);
-			return RetT{};
-		}
+			if (!native_handler_addr) {
+				console::log<log_severity::error>("Failed to resolve native hash: %llX", NativeHash);
+				return RetT{};
+			}
 
-		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
-#else
-		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(global::base + NativeHandler);
-#endif
+			native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
+		} else
+			native_handler = reinterpret_cast<invoker::native_conv_t>(global::base + NativeHandler);
 
 		invoker::native_call_ctx_t ctx{};
 		(ctx.push_arg(std::forward<Args>(args)), ...);
