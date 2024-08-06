@@ -7,6 +7,7 @@
 #include "../global/global.hpp"
 
 namespace invoker {
+#pragma pack(push, 8)
 	class internal_native_call_ctx_t
 	{
 	public:
@@ -38,8 +39,7 @@ namespace invoker {
 		}
 
 		template<typename T>
-		T* get_return_value()
-		{
+		T* get_return_value() {
 			return reinterpret_cast<T*>(m_return_value);
 		}
 
@@ -56,13 +56,13 @@ namespace invoker {
 		}
 
 	protected:
-		void* m_return_value;
-		std::uint32_t m_arg_count;
-		void* m_args;
-		std::int32_t m_data_count;
-		std::uint32_t m_data[48];
+		void* m_return_value{};
+		std::uint32_t m_arg_count{};
+		void* m_args{};
+		std::int32_t m_data_count{};
+		std::uint32_t m_data[48]{};
 	};
-	static_assert(sizeof(internal_native_call_ctx_t) == 224);
+	static_assert(sizeof(internal_native_call_ctx_t) == 0xE0);
 
 	class native_call_ctx_t : public internal_native_call_ctx_t
 	{
@@ -76,7 +76,7 @@ namespace invoker {
 		std::uint64_t m_return_stack[10]{ 0 };
 		std::uint64_t m_arg_stack[100]{ 0 };
 	};
-
+#pragma pack(pop)
 
 
 	using raw_decrypt_native_t = std::uint64_t(__fastcall*)(std::uint64_t list, std::uint64_t hash);
@@ -86,14 +86,14 @@ namespace invoker {
 	The native resolver is a function with takes the native tableand a native hashand resolves the hash to the corresponding handler, returning
 	the handler's address as a uintptr_t. The signature for all handlers is void(__fastcall*)(native_call_ctx_t*), meaning they all return void and use the native call
 	context for retrieving arguments and returning values.
-	*/  
+	*/
 
-#define USE_HANDLERS FALSE
+#define USE_HANDLERS TRUE
 	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
 #if USE_HANDLERS == FALSE
-		static const auto native_resolver{ global::base + global::native_resolver::native_resolver_rva };
-		static const auto native_table{ global::base + global::native_resolver::native_table_rva };
+		const auto native_resolver{ global::base + global::native_resolver::native_resolver_rva };
+		const auto native_table{ global::base + global::native_resolver::native_table_rva };
 		const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);
 
 		if (!native_handler_addr) {
@@ -103,12 +103,12 @@ namespace invoker {
 
 		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(native_handler_addr);
 #else
-		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(base + NativeHandler);
+		const auto native_handler = reinterpret_cast<invoker::native_conv_t>(global::base + NativeHandler);
 #endif
 
 		invoker::native_call_ctx_t ctx{};
 		(ctx.push_arg(std::forward<Args>(args)), ...);
-		
+
 		native_handler(&ctx);
 		if constexpr (!std::is_same_v<void, RetT>)
 		{

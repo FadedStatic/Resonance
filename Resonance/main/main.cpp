@@ -13,8 +13,8 @@ std::once_flag flag;
 std::uint32_t  __stdcall callback(void* _this, int ops) {
 	const auto ped = PLAYER::GET_PLAYER_PED(-1);
 	const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
+	console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.z, coords.y);
 
-	console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
 	main_menu.render();
 
 	if (GetAsyncKeyState(VK_F5) & 0x8000)
