@@ -1,6 +1,6 @@
 #include "menu.hpp"
 
-void menu::render()
+void menu_t::render()
 {
 	if (get_input_just_pressed(VK_F9))
 		global::menu::menu_open = !global::menu::menu_open;
@@ -19,23 +19,21 @@ void menu::render()
 	draw_rect({menu_base_pos.a, menu_base_pos.b+0.12f}, {0.175f, 0.05f}, global::menu::theme::subheader);
 }
 
-void menu::handle_inputs() {
+void menu_t::handle_inputs() {
 	disable_inputs();
-
-
 }
 
 // DO NOT make this static under  any circumstances. it is  dumb to do so
-bool menu::get_input_just_pressed(int key, bool from_keyboard) {
+bool menu_t::get_input_just_pressed(int key, bool from_keyboard) {
 	return from_keyboard ? (GetAsyncKeyState(key) & 0xFFFF) == 0x8001 : false;
 }
 
-void draw_rect(vec2 pos, vec2 scale, const color col)
+FORCEINLINE void draw_rect(vec2 pos, vec2 scale, const color col)
 {
 	GRAPHICS::DRAW_RECT(pos.a + scale.a / 2, pos.b + scale.b / 2, scale.a, scale.b, col.r, col.g, col.b, col.a, 0);
 }
 
-void menu::disable_inputs() {
+void menu_t::disable_inputs() {
 	PAD::SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_ACCEPT);
 	PAD::SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_CANCEL);
 	PAD::SET_INPUT_EXCLUSIVE(2, INPUT_FRONTEND_DOWN);

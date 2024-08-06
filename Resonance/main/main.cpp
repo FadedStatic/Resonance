@@ -4,18 +4,35 @@
 #include "../hooking/hooking.hpp"
 #include "../menu/menu.hpp"
 
-menu main_menu;
+menu_t main_menu;
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
 std::uint32_t  __stdcall callback(void* _this, int ops) {
+	std::call_once(flag, [&]() {
+		constexpr Hash weapon_hash = -1238556825;
+		constexpr auto vehicle_hash = 1093792632u;
+
+		const auto local_ped = PLAYER::GET_PLAYER_PED(-1);
+		const auto coords = ENTITY::GET_ENTITY_COORDS(local_ped, true);
+		console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.y, coords.z);
+
+		const auto local_player = PLAYER::GET_PLAYER_INDEX();
+		PLAYER::SET_PLAYER_INVINCIBLE(local_player, true);
+		PLAYER::SET_PLAYER_WANTED_LEVEL(local_player, 0, false);
+		PLAYER::SET_PLAYER_WANTED_LEVEL_NOW(local_player, false);
+		WEAPON::GIVE_WEAPON_TO_PED(local_ped, weapon_hash, 9999999, false, true);
+	});
+
 	main_menu.render();
+
+	if (GetAsyncKeyState(VK_F5) & 0x8000)
+		global::menu::menu_open = !global::menu::menu_open;
 
 	if (GetAsyncKeyState(VK_END) & 0x8000)
 		global::menu::menu_exit = true;
-
 	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(_this, ops);
 }
 
@@ -25,7 +42,7 @@ void main(HMODULE dll)
 	console console{};
 
 	console::log<log_severity::info>("Base address: %llX", global::base);
-	const auto threads = at_array_t<scrThread*>(reinterpret_cast<void*>(global::base + global::native_resolver::sm_threads));
+	const auto threads = at_array_t<scrThread*>(*reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads));
 
 	scrThread* persistent_thread{ nullptr };
 	
