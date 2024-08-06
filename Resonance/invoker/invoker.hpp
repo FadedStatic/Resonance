@@ -88,11 +88,11 @@ namespace invoker {
 	context for retrieving arguments and returning values.
 	*/
 
-	constexpr auto USE_HANDLERS = true;
+	constexpr auto RESOLVE_HANDLERS = false;
 	template<typename RetT, std::intptr_t NativeHash, std::uintptr_t NativeHandler, typename... Args>
 	RetT FORCEINLINE invoke(Args&&... args) {
 		native_conv_t native_handler{};
-		if constexpr(USE_HANDLERS) {
+		if constexpr(RESOLVE_HANDLERS) {
 			const auto native_resolver{ global::base + global::native_resolver::native_resolver_rva };
 			const auto native_table{ global::base + global::native_resolver::native_table_rva };
 			const auto native_handler_addr = reinterpret_cast<invoker::raw_decrypt_native_t>(native_resolver)(native_table, NativeHash);

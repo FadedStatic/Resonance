@@ -3,31 +3,30 @@
 #include "../update/natives.hpp"
 #include "../global/global.hpp"
 
-struct color
-{
-	int r, g, b, a;
-	explicit color(const std::uint32_t col)
-	{
-		r = (col >> 24) & 0xFF;
-		g = (col >> 16) & 0xFF;
-		b = (col >> 8) & 0xFF;
-		a = col & 0xFF;
-	}
+void draw_rect(vec2 pos, vec2 scale, color col);
 
-	explicit color(const int r, const int g, const int b, const int a) : r(r), g(g), b(b), a(a) {}
+class menu_option {
+public:
+	bool selected{false};
+	std::string text;
+
 };
 
-struct vec2
-{
-	float a, b;
+class submenu {
+public:
+	std::string title; // title of it.
+	std::vector<menu_option> options;
 };
 
-
-void draw_rect(vec2 pos, vec2 scale, const color col);
 class menu
 {
+	int main_idx{0}, sub_idx{0};
+	std::vector<submenu> submenus_;
 public:
 	menu() = default;
 
+	bool get_input_just_pressed(int key, bool from_keyboard=true);
 	void render();
+	void handle_inputs();
+	void disable_inputs();
 };

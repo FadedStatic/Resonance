@@ -11,14 +11,7 @@ std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
 std::uint32_t  __stdcall callback(void* _this, int ops) {
-	const auto ped = PLAYER::GET_PLAYER_PED(-1);
-	const auto coords = ENTITY::GET_ENTITY_COORDS(ped, true);
-	console::log<log_severity::info>("Player entity coordinates: { X: %f, Y: %f, Z: %f } ", coords.x, coords.z, coords.y);
-
 	main_menu.render();
-
-	if (GetAsyncKeyState(VK_F5) & 0x8000)
-		global::menu::menu_open = !global::menu::menu_open;
 
 	if (GetAsyncKeyState(VK_END) & 0x8000)
 		global::menu::menu_exit = true;
