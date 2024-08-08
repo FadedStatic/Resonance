@@ -2,6 +2,7 @@
 
 #include "../update/natives.hpp"
 #include "../global/global.hpp"
+#include "../hooking/d3d11_hook/d3d11_hook.hpp"
 
 void draw_rect(vec2 pos, vec2 scale, color col);
 class menu_option_t {
@@ -22,9 +23,14 @@ public:
 class menu_t
 {
 	int main_idx{0}, sub_idx{0};
+	ID3D11Device* device;
 	std::vector<menu_option_t*> submenus_;
 public:
-	menu_t() = default;
+	menu_t() {
+		d3d11_hook_t hook_struct{};
+		this->device = hook_struct.hook();
+		console::log<log_severity::info>("Game D3D11 device: %p", this->device);
+	}
 
 	[[nodiscard]] static bool get_input_just_pressed(int key, bool from_keyboard=true);
 	static void render();

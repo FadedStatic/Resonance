@@ -37,12 +37,12 @@ std::uint32_t  __stdcall callback(void* _this, int ops) {
 }
 
 
-void main(HMODULE dll)
+void main_thread(HMODULE dll)
 {
 	console console{};
 
 	console::log<log_severity::info>("Base address: %llX", global::base);
-	const auto threads = at_array_t<scrThread*>(*reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads));
+	const at_array_t threads{ *reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads)};
 
 	scrThread* persistent_thread{ nullptr };
 	
@@ -63,12 +63,8 @@ void main(HMODULE dll)
 
 int __stdcall DllMain(HMODULE calling_module, unsigned long reason_for_call, void* reserved)
 {
-	switch (reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		std::thread{ main, calling_module }.detach();
-		break;
-	}
+	if(reason_for_call == DLL_PROCESS_ATTACH)
+		std::thread{ main_thread, calling_module }.detach();
 
 	return 1;
 }
