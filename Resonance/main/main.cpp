@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include "../hooking/hooking.hpp"
 #include "../menu/menu.hpp"
+#include "../hooking/d3d11_hook/d3d11hook.hpp"
 
 menu_t main_menu;
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
@@ -40,7 +41,7 @@ std::uint32_t  __stdcall callback(void* _this, int ops) {
 void main(HMODULE dll)
 {
 	console console{};
-
+	d3d11_hook_t _hook{};
 	console::log<log_severity::info>("Base address: %llX", global::base);
 	const auto threads = at_array_t<scrThread*>(*reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads));
 
