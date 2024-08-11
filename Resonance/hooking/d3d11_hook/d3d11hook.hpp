@@ -15,15 +15,13 @@ constexpr auto hk_sz = 12;
 static std::uint8_t orig_bytes[hk_sz]{ 0 };
 
 static unsigned long oldpf{0};
-static ID3D11Device* p_device{ nullptr };
+static IDXGISwapChain* p_chain{ nullptr };
 static d3d11_present_t orig_present_addr{nullptr};
 
 static d3d11_present_t present_copy{nullptr};
 
 static void __stdcall stub(IDXGISwapChain* swap_chain, UINT rdx, UINT r9) {
-    const auto res = swap_chain->GetDevice(__uuidof(ID3D11Device), reinterpret_cast<void**>(&p_device));
-    if(FAILED(res))
-        p_device = nullptr;
+    p_chain = swap_chain;
     present_copy(swap_chain, rdx, r9);
 }
 
@@ -64,7 +62,7 @@ public:
 
     }
 
-    ID3D11Device* hook() {
+    IDXGISwapChain* hook() {
         if(!this->has_og_present_addr) {
             console::log<log_severity::error>("Failed to retrieve game's D3D11 present function address");
             return nullptr;
@@ -93,7 +91,7 @@ public:
         }
         console::log<log_severity::success>("Unhooked D3D11 present!");
         console::log<log_severity::success>("Retrieved game's D3D11 device");
-        return p_device;
+        return p_chain;
     }
 
 

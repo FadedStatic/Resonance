@@ -41,10 +41,11 @@ std::uint32_t  __stdcall callback(void* _this, int ops) {
 void main(HMODULE dll)
 {
 	console console{};
-	d3d11_hook_t _hook{};
+	d3d11_hook_t d3dhook{};
 	console::log<log_severity::info>("Base address: %llX", global::base);
 	const auto threads = at_array_t<scrThread*>(*reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads));
 
+	main_menu.set_swapchain(d3dhook.hook());
 	scrThread* persistent_thread{ nullptr };
 	
 	for (const auto& thread : threads)

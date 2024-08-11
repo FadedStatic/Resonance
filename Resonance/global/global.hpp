@@ -1,26 +1,8 @@
 #pragma once
 #include <shared_mutex>
 #include <atomic>
-
-struct color
-{
-	int r, g, b, a;
-	explicit color(const std::uint32_t col)
-	{
-		r = (col >> 24) & 0xFF;
-		g = (col >> 16) & 0xFF;
-		b = (col >> 8) & 0xFF;
-		a = col & 0xFF;
-	}
-
-	explicit color(const int r, const int g, const int b, const int a) : r(r), g(g), b(b), a(a) {}
-};
-
-struct vec2
-{
-	float a, b;
-	vec2(const float _a, const float _b) : a(_a), b(_b) {}
-};
+#include <Windows.h>
+#include "../libs/imgui/imgui.h"
 
 namespace global {
 	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
@@ -29,11 +11,14 @@ namespace global {
 		inline std::atomic_bool menu_open{ false };
 		inline std::atomic_bool menu_exit;
 
-		inline std::atomic pos(vec2{0.1f, 0.1f});
+		inline std::atomic pos(ImVec2{ 35,35 });
 
 		namespace theme {
-			inline std::atomic header(color{0x111111FF});
-			inline std::atomic subheader(color{0x151515FF});
+			inline std::atomic bg_col(ImColor{ 0xFA000000 });
+			inline std::atomic header(ImColor{ 0xFF000000 });
+			inline std::atomic header_dots(ImColor{ 85, 0, 138});
+			inline std::atomic subheader(ImColor{ 0x0A0A0AFF });
+			inline std::atomic subheader_text(ImColor{ 0x7600CEFF });
 		}
 	}
 
