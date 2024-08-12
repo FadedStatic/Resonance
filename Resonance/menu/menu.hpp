@@ -31,7 +31,7 @@ static bool INTERNAL_menu_initialized{ false };
 class menu_t
 {
 	particle_widget header_widget_;
-	ID3D11Device* device;
+	ID3D11Device* d3d_device_ptr{};
 	ID3D11ShaderResourceView* Image = nullptr;
 	ID3D11DeviceContext* d3d_device_ctx_ptr{};
 	IDXGISwapChain* swap_chain_ptr{};
@@ -39,7 +39,6 @@ class menu_t
 public:
 	menu_t();
 
-	void set_swapchain(IDXGISwapChain*  _swap_chain_ptr) {swap_chain_ptr=_swap_chain_ptr;}
-	void render();
+	void render(IDXGISwapChain* _swap_chain_ptr);
 	void initialize();
 };

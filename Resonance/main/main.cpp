@@ -33,7 +33,10 @@ std::uint32_t  __stdcall scr_callback(void* _this, int ops) {
 	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(_this, ops);
 }
 
-
+static void __stdcall dx_callback(IDXGISwapChain* swap_chain, UINT rdx, UINT r9) {
+	main_menu.render(swap_chain);
+	present_copy(swap_chain, rdx, r9);
+}
 void main(HMODULE dll)
 {
 	console console{};
@@ -51,7 +54,8 @@ void main(HMODULE dll)
 		}
 		console::log<log_severity::info>("Thread hash: %X", thread->m_script_hash);
 	}
-
+	d3d11_hook_t dxhk{};
+	dxhk.hook_swapchain(reinterpret_cast<std::uintptr_t*>(&dx_callback));
 	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&scr_callback), orig_scr_thread_run_addr};
 	while(!global::menu::menu_exit) {}
 	FreeLibrary(dll);

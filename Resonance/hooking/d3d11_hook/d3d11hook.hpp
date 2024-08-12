@@ -11,20 +11,8 @@
 using d3d11_present_t =  HRESULT(WINAPI*)(
   IDXGISwapChain*, UINT, UINT);
 
-constexpr auto hk_sz = 12;
-static std::uint8_t orig_bytes[hk_sz]{ 0 };
-
-static unsigned long oldpf{0};
-static IDXGISwapChain* p_chain{ nullptr };
 static d3d11_present_t orig_present_addr{nullptr};
-
 static d3d11_present_t present_copy{nullptr};
-
-static void __stdcall stub(IDXGISwapChain* swap_chain, UINT rdx, UINT r9) {
-    p_chain = swap_chain;
-    present_copy(swap_chain, rdx, r9);
-}
-
 
 class d3d11_hook_t {
     bool has_og_present_addr{ false };
@@ -62,39 +50,35 @@ public:
 
     }
 
-    //
-    IDXGISwapChain* hook() {
+    void hook_swapchain(std::uintptr_t* callback) {
         if(!this->has_og_present_addr) {
             console::log<log_severity::error>("Failed to retrieve game's D3D11 present function address");
-            return nullptr;
+            return;
         }
         if(MH_Initialize() != MH_OK) {
             console::log<log_severity::error>("Failed to initialize MinHook");
-            return nullptr;
+            return;
         }
-        if(MH_CreateHook(orig_present_addr, &stub, reinterpret_cast<void**>(&present_copy)) != MH_OK) {
-            console::log<log_severity::error>("Failed to create D3D11 present hook");
-            return nullptr;
+        if(const auto status = MH_CreateHook(orig_present_addr, callback, reinterpret_cast<void**>(&present_copy)); status != MH_OK) {
+            console::log<log_severity::error>("Failed to create D3D11 present hook: %02llX %02llX %02llX %02X", orig_present_addr, &callback, &present_copy, status);
+            return;
         }
         if(MH_EnableHook(orig_present_addr) != MH_OK) {
             console::log<log_severity::error>("Failed to enable D3D11 present hook");
-            return nullptr;
+            return;
         }
         console::log<log_severity::success>("Hooked D3D11 present!");
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+    }
+
+    ~d3d11_hook_t() {
         if(MH_DisableHook(orig_present_addr) != MH_OK) {
             console::log<log_severity::error>("Failed to disable D3D11 present hook");
-            return nullptr;
+            return;
         }
         if(MH_Uninitialize() != MH_OK) {
             console::log<log_severity::error>("Failed to uninitialize MinHook");
-            return nullptr;
+            return;
         }
         console::log<log_severity::success>("Unhooked D3D11 present!");
-        console::log<log_severity::success>("Retrieved game's D3D11 device");
-        return p_chain;
     }
-
-
-
 };
