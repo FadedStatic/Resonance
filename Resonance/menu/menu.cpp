@@ -21,10 +21,10 @@ void menu_t::initialize()
 	ImGui::StyleColorsLight();
 	ImGuiIO& io = ImGui::GetIO();
 	io.ConfigFlags = ImGuiConfigFlags_NoMouseCursorChange;
-	/*D3DX11_IMAGE_LOAD_INFO info;
+	D3DX11_IMAGE_LOAD_INFO info;
 	ID3DX11ThreadPump* pump{ nullptr };
-	D3DX11CreateShaderResourceViewFromMemory(device, logo, sizeof(logo), &info,
-		pump, &Image, 0);*/
+	D3DX11CreateShaderResourceViewFromMemory(d3d_device_ptr, logo, sizeof(logo), &info,
+		pump, &Image, 0);
 }
 
 menu_t::menu_t()
@@ -63,7 +63,7 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 
 	header_widget_.render();
 	ImGui::SetCursorPos({104, 11});
-	/*ImGui::Image((PVOID)Image, ImVec2(141, 117));*/
+	ImGui::Image((PVOID)Image, ImVec2(141, 117));
 
 
 
