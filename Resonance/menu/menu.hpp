@@ -12,12 +12,6 @@
 #include <tchar.h>
 #include <d3dx11tex.h>
 
-/*
-replace with:
-#include "../update/natives.hpp"
-#include "../global/global.hpp"
- */
-
 class menu_option_t {
 public:
 	bool selected{ false };
@@ -36,8 +30,6 @@ public:
 static bool INTERNAL_menu_initialized{ false };
 class menu_t
 {
-	int main_idx_{0}, sub_idx_{-1}, tri_idx_{-1};
-	std::vector<menu_option_t*> submenus_;
 	particle_widget header_widget_;
 	ID3D11Device* device;
 	ID3D11ShaderResourceView* Image = nullptr;
@@ -47,10 +39,7 @@ class menu_t
 public:
 	menu_t();
 
-	[[nodiscard]] static bool get_input_just_pressed(int key, bool from_keyboard=true);
 	void set_swapchain(IDXGISwapChain*  _swap_chain_ptr) {swap_chain_ptr=_swap_chain_ptr;}
 	void render();
 	void initialize();
-	static void handle_inputs();
-	static void disable_inputs();
 };

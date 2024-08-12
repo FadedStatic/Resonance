@@ -46,7 +46,9 @@ add_library(Resonance SHARED
         libs/imgui/imstb_textedit.h
         libs/imgui/imstb_truetype.h
         menu/widgets/particle_widget.hpp
-        global/assets.hpp)
+        global/assets.hpp
+        menu/menu_handler.hpp
+        menu/menu_handler.cpp)
 
 target_link_libraries(Resonance d3dx11 d3d11)
 set_property(TARGET Resonance PROPERTY CXX_STANDARD 23)

@@ -62,6 +62,7 @@ public:
 
     }
 
+    //
     IDXGISwapChain* hook() {
         if(!this->has_og_present_addr) {
             console::log<log_severity::error>("Failed to retrieve game's D3D11 present function address");

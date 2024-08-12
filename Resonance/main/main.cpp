@@ -3,16 +3,18 @@
 #include <Windows.h>
 #include "../hooking/hooking.hpp"
 #include "../menu/menu.hpp"
+#include "../menu/menu_handler.hpp"
 #include "../hooking/d3d11_hook/d3d11hook.hpp"
 
 menu_t main_menu;
+menu_handler_t menu_handler;
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
 std::once_flag flag;
 
-std::uint32_t  __stdcall callback(void* _this, int ops) {
-	std::call_once(flag, [&]() {
+std::uint32_t  __stdcall scr_callback(void* _this, int ops) {
+	/*std::call_once(flag, [&]() {
 		constexpr Hash weapon_hash = -1238556825;
 		constexpr auto vehicle_hash = 1093792632u;
 
@@ -25,15 +27,9 @@ std::uint32_t  __stdcall callback(void* _this, int ops) {
 		PLAYER::SET_PLAYER_WANTED_LEVEL(local_player, 0, false);
 		PLAYER::SET_PLAYER_WANTED_LEVEL_NOW(local_player, false);
 		WEAPON::GIVE_WEAPON_TO_PED(local_ped, weapon_hash, 9999999, false, true);
-	});
+	});*/
 
-	main_menu.render();
-
-	if (GetAsyncKeyState(VK_F5) & 0x8000)
-		global::menu::menu_open = !global::menu::menu_open;
-
-	if (GetAsyncKeyState(VK_END) & 0x8000)
-		global::menu::menu_exit = true;
+	menu_handler.handle_inputs();
 	return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(_this, ops);
 }
 
@@ -41,11 +37,9 @@ std::uint32_t  __stdcall callback(void* _this, int ops) {
 void main(HMODULE dll)
 {
 	console console{};
-	d3d11_hook_t d3dhook{};
 	console::log<log_severity::info>("Base address: %llX", global::base);
 	const auto threads = at_array_t<scrThread*>(*reinterpret_cast<at_array_t<scrThread*>*>(global::base + global::native_resolver::sm_threads));
 
-	main_menu.set_swapchain(d3dhook.hook());
 	scrThread* persistent_thread{ nullptr };
 	
 	for (const auto& thread : threads)
@@ -58,7 +52,7 @@ void main(HMODULE dll)
 		console::log<log_severity::info>("Thread hash: %X", thread->m_script_hash);
 	}
 
-	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&callback), orig_scr_thread_run_addr};
+	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&scr_callback), orig_scr_thread_run_addr};
 	while(!global::menu::menu_exit) {}
 	FreeLibrary(dll);
 }

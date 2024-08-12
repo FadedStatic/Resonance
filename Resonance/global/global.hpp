@@ -3,31 +3,12 @@
 #include <atomic>
 #include <Windows.h>
 #include "../libs/imgui/imgui.h"
+#include <vector>
+
+class cat_menu_option_t;
+class menu_option_t;
 
 namespace global {
-	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
-
-	namespace menu {
-		inline std::atomic_bool menu_open{ false };
-		inline std::atomic_bool menu_exit;
-
-		inline std::atomic pos(ImVec2{ 35,35 });
-
-		namespace theme {
-			inline std::atomic bg_col(ImColor{ 0xFA000000 });
-			inline std::atomic header(ImColor{ 0xFF000000 });
-			inline std::atomic header_dots(ImColor{ 85, 0, 138});
-			inline std::atomic subheader(ImColor{ 0x0A0A0AFF });
-			inline std::atomic subheader_text(ImColor{ 0x7600CEFF });
-		}
-	}
-
-	namespace native_resolver {
-		constexpr auto native_resolver_rva = 0x1633EF8;
-		constexpr auto native_table_rva = 0x2F22540;
-		constexpr auto sm_threads = 0x2f24630;
-	}
-
 	template<typename _Ty>
 	struct shared_var {
 		std::shared_mutex obj_mutex;
@@ -51,8 +32,32 @@ namespace global {
 			return get();
 		}
 
+		shared_var() = default;
 		shared_var(_Ty obj) : object(obj) {}
 	};
+
+	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
+	namespace menu {
+		inline shared_var<std::vector<menu_option_t*>> submenus{};
+		inline std::atomic_bool menu_open{ false };
+		inline std::atomic_bool menu_exit;
+
+		inline std::atomic pos(ImVec2{ 35,35 });
+
+		namespace theme {
+			inline std::atomic bg_col(ImColor{ 0xFA000000 });
+			inline std::atomic header(ImColor{ 0xFF000000 });
+			inline std::atomic header_dots(ImColor{ 85, 0, 138});
+			inline std::atomic subheader(ImColor{ 0x0A0A0AFF });
+			inline std::atomic subheader_text(ImColor{ 0x7600CEFF });
+		}
+	}
+
+	namespace native_resolver {
+		constexpr auto native_resolver_rva = 0x1633EF8;
+		constexpr auto native_table_rva = 0x2F22540;
+		constexpr auto sm_threads = 0x2f24630;
+	}
 }
 
 enum pad_controls : int {
