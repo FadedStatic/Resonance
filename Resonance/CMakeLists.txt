@@ -49,7 +49,8 @@ add_library(Resonance SHARED
         global/assets.hpp
         menu/menu_handler.hpp
         menu/menu_handler.cpp
-        menu/commands/player_commands.hpp)
+        menu/commands/player_commands.hpp
+        menu/commands/teleport_commands.hpp)
 
 target_link_libraries(Resonance d3dx11 d3d11)
 set_property(TARGET Resonance PROPERTY CXX_STANDARD 23)

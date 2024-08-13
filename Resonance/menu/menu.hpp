@@ -24,7 +24,7 @@ public:
 
 class cat_menu_option_t : public menu_option_t {
 public:
-	std::vector<menu_option_t*> options;
+	std::vector<std::shared_ptr<menu_option_t>> options;
 	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{ name } { }
 };
 

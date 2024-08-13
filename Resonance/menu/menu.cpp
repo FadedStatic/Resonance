@@ -1,5 +1,5 @@
 #include "commands/player_commands.hpp"
-
+#include "commands/teleport_commands.hpp"
 void menu_t::initialize()
 {
 	INTERNAL_menu_initialized = true;
@@ -28,12 +28,11 @@ void menu_t::initialize()
 
 	main_font = io.Fonts->AddFontFromMemoryTTF(interFont, 874708, 18);
 
-	auto teleport = new menu_option_t{
-"Teleport" };
+	global::menu::menu_indexes.push_back(0);
+
 
 	global::menu::submenus.push_back(create_player_namespace());
-	global::menu::submenus.push_back(teleport);
-	global::menu::menu_indexes.push_back(0);
+	global::menu::submenus.push_back(create_teleport_namespace());
 }
 
 menu_t::menu_t()
@@ -79,18 +78,17 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	// So, our entrancy depth is dictated by the size of selected vector
 	const auto& where_vec = global::menu::menu_indexes.get();
 	auto&& menus = global::menu::submenus.get();
-	int curr_depth = 0;
-
+	int  curr_depth = 0;
 	auto&& indexed_menu = menus;
-	while (curr_depth++ < static_cast<int>(where_vec.size()) - 2)
+	while (curr_depth++<static_cast<int>(where_vec.size())-2)
 	{
-		indexed_menu = reinterpret_cast<cat_menu_option_t*>(indexed_menu[where_vec[curr_depth]])->options;
+		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[curr_depth]])->options;
 	}
 
 	// Render subheading
 	ImGui::GetWindowDrawList()->AddRectFilled({ menu_base_pos.x,menu_base_pos.y + 108 }, { menu_base_pos.x + 354, menu_base_pos.y + 108 + 34 }, global::menu::theme::subheader.load());
-	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x+11,menu_base_pos.y + 114 }, global::menu::theme::subheader_text.load(), "Resonance");
-	const auto main_idx = global::menu::menu_indexes.at(0)+1;
+	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 11,menu_base_pos.y + 114 }, global::menu::theme::subheader_text.load(), "Resonance");
+	const auto main_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size()-1) + 1;
 	const auto max_idx = indexed_menu.size();
 	const auto pos_label = std::vformat("{:d} / {:d}", std::make_format_args(main_idx, max_idx)).c_str();
 	const auto text_sz = ImGui::CalcTextSize(pos_label);

@@ -68,7 +68,7 @@ namespace global {
 
 	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
 	namespace menu {
-		inline shared_vec<menu_option_t*> submenus{};
+		inline shared_vec<std::shared_ptr<menu_option_t>> submenus{};
 		inline shared_vec<int> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
 		inline std::atomic_bool menu_open{ false };
 		inline std::atomic_bool menu_exit;
