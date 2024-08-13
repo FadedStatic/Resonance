@@ -3,6 +3,7 @@
 #include "../update/natives.hpp"
 #include <vector>
 #include <Windows.h>
+#include "menu.hpp"
 
 // The purpose of this class is to modify global variables and call natives on every execution.
 class menu_handler_t {

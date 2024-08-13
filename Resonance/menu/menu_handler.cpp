@@ -11,8 +11,37 @@ void menu_handler_t::handle_inputs() {
     if (get_input_just_pressed(VK_END))
         global::menu::menu_exit = true;
 
+    if (!INTERNAL_menu_initialized)
+        return;
+
     if (global::menu::menu_open)
         disable_inputs();
+
+    const auto& where_vec = global::menu::menu_indexes.get();
+    auto&& menus = global::menu::submenus.get();
+    int curr_depth = 0;
+
+    auto&& indexed_menu = menus;
+    while (curr_depth++ < static_cast<int>(where_vec.size()) - 2)
+    {
+        indexed_menu = reinterpret_cast<cat_menu_option_t*>(indexed_menu[where_vec[curr_depth]])->options;
+    }
+
+    auto local_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size() - 1);
+
+    if (get_input_just_pressed(VK_DOWN))
+        global::menu::menu_indexes.set_back(
+            local_idx + 2 > indexed_menu.size() ? 0 : local_idx + 1
+        );
+    else if (get_input_just_pressed(VK_UP))
+        global::menu::menu_indexes.set_back(
+            local_idx == 0 ? indexed_menu.size()-1 : local_idx-1
+        );
+    else if (get_input_just_pressed(VK_RETURN))
+    {
+        if  (typeid(indexed_menu[local_idx]) == typeid(cat_menu_option_t*))
+				global::menu::menu_indexes.push_back(0);
+    }
 }
 
 void menu_handler_t::disable_inputs() {

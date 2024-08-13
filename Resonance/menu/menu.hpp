@@ -18,16 +18,17 @@ public:
 	std::string name;
 	std::string description;
 
-	menu_option_t(const std::string_view name_) noexcept : name{name_} { }
+	void render(const ImVec2& pos);
+	menu_option_t(const std::string_view name_) noexcept : name{ name_ } { }
 };
 
 class cat_menu_option_t : public menu_option_t {
 public:
 	std::vector<menu_option_t*> options;
-	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{name} { }
+	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{ name } { }
 };
 
-static bool INTERNAL_menu_initialized{ false };
+inline bool INTERNAL_menu_initialized{ false };
 class menu_t
 {
 	particle_widget header_widget_;
@@ -35,6 +36,7 @@ class menu_t
 	ID3D11ShaderResourceView* Image = nullptr;
 	ID3D11DeviceContext* d3d_device_ctx_ptr{};
 	IDXGISwapChain* swap_chain_ptr{};
+	ImFont* main_font;
 	ID3D11RenderTargetView* render_target_view_ptr{};
 public:
 	menu_t();

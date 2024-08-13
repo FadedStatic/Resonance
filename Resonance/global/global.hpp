@@ -36,9 +36,40 @@ namespace global {
 		shared_var(_Ty obj) : object(obj) {}
 	};
 
+	template <typename _Ty>
+	struct shared_vec : shared_var<std::vector<_Ty>>
+	{
+		void push_back(const _Ty& val)
+		{
+			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
+			this->object.push_back(val);
+		}
+		void pop_back()
+		{
+			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
+			this->object.pop_back();
+		}
+		void set_back(const _Ty& val)
+		{
+			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
+			this->object[this->object.size()-1] = val;
+		}
+		_Ty at(const int idx)
+		{
+			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
+			return this->object.at(idx);
+		}
+		int size()
+		{
+			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
+			return this->object.size();
+		}
+	};
+
 	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
 	namespace menu {
-		inline shared_var<std::vector<menu_option_t*>> submenus{};
+		inline shared_vec<menu_option_t*> submenus{};
+		inline shared_vec<int> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
 		inline std::atomic_bool menu_open{ false };
 		inline std::atomic_bool menu_exit;
 
@@ -47,9 +78,11 @@ namespace global {
 		namespace theme {
 			inline std::atomic bg_col(ImColor{ 0xFA000000 });
 			inline std::atomic header(ImColor{ 0xFF000000 });
-			inline std::atomic header_dots(ImColor{ 85, 0, 138});
-			inline std::atomic subheader(ImColor{ 0x0A0A0AFF });
-			inline std::atomic subheader_text(ImColor{ 0x7600CEFF });
+			inline std::atomic header_dots(ImColor{ 85, 0, 138 });
+			inline std::atomic subheader(ImColor{ 0xDE000000 });
+			inline std::atomic subheader_text(ImColor{ 0xFFCE0076 });
+			inline std::atomic active_text(ImColor{ 0xFFFFFFFF });
+			inline std::atomic inactive_text(ImColor{ 0xFFE6E6E6 });
 		}
 	}
 
