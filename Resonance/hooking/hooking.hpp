@@ -23,11 +23,9 @@ struct hk_scr_thread_run_t {
 		*scr_thread_run_ptr_addr = callback;
 
 		console::log<log_severity::success>("Successfully overwrote virtual function table entry at: [%p]", scr_thread_run_ptr_addr);
-
 	}
 
 	~hk_scr_thread_run_t() {
-
 		console::log<log_severity::warn>("Restoring virtual function table entry");
 		*scr_thread_run_ptr_addr = orig_scr_thread_run_addr;
 		console::log<log_severity::success>("Restored!");

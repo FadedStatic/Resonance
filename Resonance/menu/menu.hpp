@@ -17,7 +17,7 @@ public:
 	bool selected{ false };
 	std::string name;
 	std::string description;
-
+	virtual ~menu_option_t() = default;
 	void render(const ImVec2& pos);
 	menu_option_t(const std::string_view name_) noexcept : name{ name_ } { }
 };
