@@ -39,14 +39,14 @@ void menu_handler_t::handle_inputs() {
     else if (get_input_just_pressed(VK_RETURN)) {
         if (const auto derived = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[local_idx]); derived != nullptr)
             global::menu::menu_indexes.push_back(0);
+        else if(indexed_menu[local_idx]->cb)
+            indexed_menu[local_idx]->cb(indexed_menu[local_idx]);
     }
     else if (get_input_just_pressed(VK_BACK))
     {
         if (where_vec.size() > 1)
             global::menu::menu_indexes.pop_back();
-
     }
-    //else if ()
 }
 
 void menu_handler_t::disable_inputs() {

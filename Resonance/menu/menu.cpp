@@ -80,15 +80,17 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	auto&& menus = global::menu::submenus.get();
 	int  curr_depth = 0;
 	auto&& indexed_menu = menus;
+	std::string menu_title{"Resonance"};
 	while (curr_depth++<static_cast<int>(where_vec.size())-2)
 	{
+		menu_title = indexed_menu.at(where_vec[curr_depth])->name;
 		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[curr_depth]])->options;
 	}
 
 	// Render subheading
+	const auto main_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size() - 1) + 1;
 	ImGui::GetWindowDrawList()->AddRectFilled({ menu_base_pos.x,menu_base_pos.y + 108 }, { menu_base_pos.x + 354, menu_base_pos.y + 108 + 34 }, global::menu::theme::subheader.load());
-	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 11,menu_base_pos.y + 114 }, global::menu::theme::subheader_text.load(), "Resonance");
-	const auto main_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size()-1) + 1;
+	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 11,menu_base_pos.y + 114 }, global::menu::theme::subheader_text.load(), menu_title.c_str());
 	const auto max_idx = indexed_menu.size();
 	const auto pos_label = std::vformat("{:d} / {:d}", std::make_format_args(main_idx, max_idx)).c_str();
 	const auto text_sz = ImGui::CalcTextSize(pos_label);

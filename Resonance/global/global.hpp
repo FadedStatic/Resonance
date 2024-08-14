@@ -7,6 +7,7 @@
 
 class cat_menu_option_t;
 class menu_option_t;
+using menu_option_callback = bool(*)(const std::shared_ptr<menu_option_t>& menu_ctx);
 
 namespace global {
 	template<typename _Ty>

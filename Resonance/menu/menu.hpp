@@ -17,9 +17,12 @@ public:
 	bool selected{ false };
 	std::string name;
 	std::string description;
+	menu_option_callback cb{};
 	virtual ~menu_option_t() = default;
 	void render(const ImVec2& pos);
+
 	menu_option_t(const std::string_view name_) noexcept : name{ name_ } { }
+	menu_option_t(const std::string_view name_,  const menu_option_callback& cb_)  : name(name_), cb(cb_) {}
 };
 
 class cat_menu_option_t : public menu_option_t {

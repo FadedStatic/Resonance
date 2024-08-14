@@ -4,12 +4,11 @@ include_directories("C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\
 link_directories("C:\\Program Files (x86)\\Microsoft DirectX SDK (June 2010)\\Lib\\x64")
 
 add_library(Resonance SHARED
-        "main/main.cpp" "menu/menu.cpp" "input/input.cpp" "hooking/hooking.cpp"
+        "main/main.cpp" "menu/menu.cpp" "hooking/hooking.cpp"
         console/console.cpp
         console/console.hpp
         hooking/hooking.hpp
         global/global.hpp
-        input/input.hpp
         invoker/invoker.hpp
         menu/menu.hpp
         update/natives.hpp
