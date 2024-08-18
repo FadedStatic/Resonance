@@ -1,9 +1,10 @@
-#include "commands/player_commands.hpp"
-#include "commands/teleport_commands.hpp"
+#include "namespaces.hpp"
+
 void menu_t::initialize()
 {
 	INTERNAL_menu_initialized = true;
 	header_widget_.setup_circles();
+	selected_widget_.setup_circles();
 	swap_chain_ptr->GetDevice(__uuidof(ID3D11Device), (void**)&d3d_device_ptr);
 	d3d_device_ptr->GetImmediateContext(&d3d_device_ctx_ptr);
 
@@ -27,18 +28,27 @@ void menu_t::initialize()
 		pump, &Image, 0);
 
 	main_font = io.Fonts->AddFontFromMemoryTTF(interFont, 874708, 18);
-
 	global::menu::menu_indexes.push_back(0);
-
-
-	global::menu::submenus.push_back(create_player_namespace());
-	global::menu::submenus.push_back(create_teleport_namespace());
+	global::menu::submenus.set(create_namespaces());
+	global::menu::submenus.push_back(std::make_shared<menu_option_t>(
+		"Exit", [](const std::shared_ptr<menu_option_t>& menu_ctx) -> bool
+		{
+			global::menu::menu_exit = true;
+			return true;
+		}
+	));
+	global::menu::submenus.at(0)->selected = true;
 }
 
 menu_t::menu_t()
 {
 	const auto menu_base_pos = global::menu::pos.load();
-	this->header_widget_ = particle_widget(global::menu::pos, { 354, 140 }, 40, 5, 3, global::menu::theme::header, global::menu::theme::header_dots);
+	this->header_widget_ = particle_widget(
+		global::menu::pos, { 354, 140 }, 40, 5, 3, global::menu::theme::header, global::menu::theme::header_dots
+);
+	this->selected_widget_ = particle_widget<true>(
+		{ menu_base_pos.x + 4, menu_base_pos.y + 144 }, { 346, 32 }, 15, 5, 3, global::menu::theme::subheader, global::menu::theme::header_dots
+	);
 }
 
 void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
@@ -96,11 +106,18 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	const auto text_sz = ImGui::CalcTextSize(pos_label);
 	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 343 - text_sz.x,menu_base_pos.y + 114 }, global::menu::theme::active_text.load(), pos_label);
 
-	ImVec2 running_pos{ menu_base_pos.x + 11, menu_base_pos.y + 108 + 34 };
+	if (global::menu::move_circles) {
+		selected_widget_.move_widget(main_idx - 1);
+		global::menu::move_circles = false;
+	}
+
+	selected_widget_.render();
+
+	ImVec2 running_pos{ menu_base_pos.x + 11, menu_base_pos.y + 146 };
 	for (const auto& item : indexed_menu)
 	{
 		item->render(running_pos);
-		running_pos.y += 32;
+		running_pos.y += 36;
 	}
 
 	ImGui::End();
@@ -110,5 +127,5 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 
 void menu_option_t::render(const ImVec2& pos)
 {
-	ImGui::GetWindowDrawList()->AddText(pos, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
+	ImGui::GetWindowDrawList()->AddText({ pos.x, pos.y+7 }, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
 }

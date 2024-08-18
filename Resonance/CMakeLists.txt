@@ -49,7 +49,13 @@ add_library(Resonance SHARED
         menu/menu_handler.hpp
         menu/menu_handler.cpp
         menu/commands/player_commands.hpp
-        menu/commands/teleport_commands.hpp)
+        menu/commands/teleport_commands.hpp
+        menu/commands/misc_commands.hpp
+        menu/commands/online_commands.hpp
+        menu/commands/settings.hpp
+        menu/commands/vehspawner_commands.hpp
+        menu/commands/world_commands.hpp
+        menu/namespaces.hpp)
 
 target_link_libraries(Resonance d3dx11 d3d11)
 set_property(TARGET Resonance PROPERTY CXX_STANDARD 23)

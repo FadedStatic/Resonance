@@ -5,9 +5,11 @@
 #include "../libs/imgui/imgui.h"
 #include <vector>
 
+
 class cat_menu_option_t;
+
 class menu_option_t;
-using menu_option_callback = bool(*)(const std::shared_ptr<menu_option_t>& menu_ctx);
+using menu_option_callback = bool(const std::shared_ptr<menu_option_t>& menu_ctx);
 
 namespace global {
 	template<typename _Ty>
@@ -65,6 +67,11 @@ namespace global {
 			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
 			return this->object.size();
 		}
+		void set_at(const int idx, const _Ty& val)
+		{
+			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
+			this->object[idx] = val;
+		}
 	};
 
 	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
@@ -73,17 +80,17 @@ namespace global {
 		inline shared_vec<int> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
 		inline std::atomic_bool menu_open{ false };
 		inline std::atomic_bool menu_exit;
-
+		inline std::atomic_bool move_circles{ false };
 		inline std::atomic pos(ImVec2{ 35,35 });
 
 		namespace theme {
 			inline std::atomic bg_col(ImColor{ 0xFA000000 });
 			inline std::atomic header(ImColor{ 0xFF000000 });
 			inline std::atomic header_dots(ImColor{ 85, 0, 138 });
-			inline std::atomic subheader(ImColor{ 0xDE000000 });
+			inline std::atomic subheader(ImColor{ 0x90000000 });
 			inline std::atomic subheader_text(ImColor{ 0xFFCE0076 });
 			inline std::atomic active_text(ImColor{ 0xFFFFFFFF });
-			inline std::atomic inactive_text(ImColor{ 0xFFE6E6E6 });
+			inline std::atomic inactive_text(ImColor{ 0xFFC6C6C6 });
 		}
 	}
 

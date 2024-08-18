@@ -13,6 +13,7 @@ inline float calc_dist(const ImVec2& pos1, const ImVec2& pos2)
 	);
 }
 
+template <bool layer_over=false>
 class particle_widget
 {
 public:
@@ -80,6 +81,15 @@ public:
 		ImGui::GetWindowDrawList()->AddRectFilled({ pos.x, pos.y }, { pos.x + sz.x, pos.y + sz.y }, backfill, rounding);
 	}
 
+	void move_widget(const int idx)
+	{
+		const auto new_y = global::menu::pos.load().y + 146 + (36 * idx);
+		pos.y = new_y;
+		circle_pos.clear();
+		circle_dir.clear();
+		setup_circles();
+	}
+
 	void move_circles()
 	{
 		if (ticker < 4)
@@ -100,13 +110,13 @@ public:
 		for (auto& c : circle_pos)
 		{
 			const auto next_x = c.x + (circle_dir[idx].first ? std::abs(off_x(gen)) : off_x(gen));
-			if (next_x > max_x || next_x < min_x)
+			if (next_x > max_x - 2 || next_x < min_x + 2)
 				circle_dir[idx].first = !circle_dir[idx].first;
 			else
 				c.x = next_x;
 
 			const auto next_y = c.y + (circle_dir[idx].second ? std::abs(off_y(gen)) : off_y(gen));
-			if (next_y > max_y || next_y < min_y)
+			if (next_y > max_y - 2 || next_y < min_y + 2)
 				circle_dir[idx].second = !circle_dir[idx].second;
 			else
 				c.y = next_y;
@@ -118,7 +128,8 @@ public:
 	void render()
 	{
 		move_circles();
-		draw_background();
+		if constexpr(!layer_over)
+			draw_background();
 		for (std::size_t i = 0;  i < n_circles; i++)
 		{
 			const auto& c = circle_pos[i];
@@ -134,5 +145,7 @@ public:
 				}
 			}
 		}
+		if constexpr (layer_over)
+			draw_background();
 	}
 };

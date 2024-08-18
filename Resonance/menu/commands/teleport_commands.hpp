@@ -1,5 +1,5 @@
 #pragma once
-#include "menu.hpp"
+#include "../menu.hpp"
 
 bool fuck_cb(const std::shared_ptr<menu_option_t>& menu_ctx)
 {

@@ -8,7 +8,7 @@
 #include "../libs/imgui/imgui_impl_win32.h"
 #include "../libs/imgui/imgui_impl_dx11.h"
 #include "widgets/particle_widget.hpp"
-
+#include <functional>
 #include <tchar.h>
 #include <d3dx11tex.h>
 
@@ -17,24 +17,27 @@ public:
 	bool selected{ false };
 	std::string name;
 	std::string description;
-	menu_option_callback cb{};
+	std::function<menu_option_callback> cb{};
 	virtual ~menu_option_t() = default;
 	void render(const ImVec2& pos);
 
 	menu_option_t(const std::string_view name_) noexcept : name{ name_ } { }
-	menu_option_t(const std::string_view name_,  const menu_option_callback& cb_)  : name(name_), cb(cb_) {}
+	menu_option_t(const std::string_view name_,  const std::function<menu_option_callback>& cb_)  : name(name_), cb(cb_) {}
+
 };
 
 class cat_menu_option_t : public menu_option_t {
 public:
 	std::vector<std::shared_ptr<menu_option_t>> options;
 	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{ name } { }
+
 };
 
 inline bool INTERNAL_menu_initialized{ false };
 class menu_t
 {
-	particle_widget header_widget_;
+	particle_widget<false> header_widget_;
+	particle_widget<true> selected_widget_;
 	ID3D11Device* d3d_device_ptr{};
 	ID3D11ShaderResourceView* Image = nullptr;
 	ID3D11DeviceContext* d3d_device_ctx_ptr{};

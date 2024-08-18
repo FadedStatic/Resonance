@@ -19,7 +19,7 @@ void menu_handler_t::handle_inputs() {
 
     const auto& where_vec = global::menu::menu_indexes.get();
     auto&& menus = global::menu::submenus.get();
-    int  curr_depth = 0;
+    int curr_depth = 0;
     auto&& indexed_menu = menus;
     while (curr_depth++ < static_cast<int>(where_vec.size()) - 2)
     {
@@ -29,24 +29,48 @@ void menu_handler_t::handle_inputs() {
     auto local_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size() - 1);
 
     if (get_input_just_pressed(VK_DOWN))
+    {
+    	const auto new_idx = local_idx + 2 > indexed_menu.size() ? 0 : local_idx + 1;
+		global::menu::menu_indexes.set_back(
+			new_idx
+		);
+        indexed_menu.at(local_idx)->selected = false;
+        indexed_menu.at(new_idx)->selected = true;
+	}
+    else if (get_input_just_pressed(VK_UP)) {
+        const auto new_idx = local_idx == 0 ? indexed_menu.size() - 1 : local_idx - 1;
         global::menu::menu_indexes.set_back(
-            local_idx + 2 > indexed_menu.size() ? 0 : local_idx + 1
+            new_idx
         );
-    else if (get_input_just_pressed(VK_UP))
-        global::menu::menu_indexes.set_back(
-            local_idx == 0 ? indexed_menu.size() - 1 : local_idx - 1
-        );
+        indexed_menu.at(local_idx)->selected = false;
+        indexed_menu.at(new_idx)->selected = true;
+
+    }
     else if (get_input_just_pressed(VK_RETURN)) {
-        if (const auto derived = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[local_idx]); derived != nullptr)
+        if (const auto derived = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[local_idx]); derived != nullptr) {
             global::menu::menu_indexes.push_back(0);
-        else if(indexed_menu[local_idx]->cb)
+            derived->options.at(0)->selected = true;
+        }
+        else if (indexed_menu[local_idx]->cb) {
             indexed_menu[local_idx]->cb(indexed_menu[local_idx]);
+            return;
+        }
+        else
+        {
+            return;
+        }
     }
     else if (get_input_just_pressed(VK_BACK))
     {
         if (where_vec.size() > 1)
             global::menu::menu_indexes.pop_back();
+        indexed_menu[local_idx]->selected = false;
     }
+    else
+    {
+        return;
+    }
+    global::menu::move_circles = true;
 }
 
 void menu_handler_t::disable_inputs() {
