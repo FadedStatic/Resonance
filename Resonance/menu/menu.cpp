@@ -1,5 +1,9 @@
 #include "namespaces.hpp"
 
+
+std::atomic_bool menu_t::menu_open = false;
+std::atomic_bool menu_t::menu_exit = false;
+
 void menu_t::initialize()
 {
 	INTERNAL_menu_initialized = true;
@@ -28,26 +32,30 @@ void menu_t::initialize()
 		pump, &Image, 0);
 
 	main_font = io.Fonts->AddFontFromMemoryTTF(interFont, 874708, 18);
-	global::menu::menu_indexes.push_back(0);
-	global::menu::submenus.set(create_namespaces());
-	global::menu::submenus.push_back(std::make_shared<menu_option_t>(
-		"Exit", [](const std::shared_ptr<menu_option_t>& menu_ctx) -> bool
+
+
+	this->menu_indexes.push_back(0);
+	this->submenus.reserve(8);
+	for (const auto& init_func : init::namespaces)
+		this->submenus.push_back(init_func());
+	auto& this_wrapper = *this;
+	this->submenus.push_back(std::make_shared<menu_option_t>(
+		"Exit", [&](const std::shared_ptr<menu_option_t>& menu_ctx) -> bool
 		{
-			global::menu::menu_exit = true;
+			this_wrapper.menu_exit = true;
 			return true;
 		}
 	));
-	global::menu::submenus.at(0)->selected = true;
+	this->submenus.at(0)->selected = true;
 }
 
 menu_t::menu_t()
 {
-	const auto menu_base_pos = global::menu::pos.load();
 	this->header_widget_ = particle_widget(
-		global::menu::pos, { 354, 140 }, 40, 5, 3, global::menu::theme::header, global::menu::theme::header_dots
+		this->pos, { 354, 140 }, 40, 5, 3, global::menu::theme::header, global::menu::theme::header_dots
 );
 	this->selected_widget_ = particle_widget<true>(
-		{ menu_base_pos.x + 4, menu_base_pos.y + 144 }, { 346, 32 }, 15, 5, 3, global::menu::theme::subheader, global::menu::theme::header_dots
+		{ this->pos.x + 4, this->pos.y + 144 }, { 346, 32 }, 15, 5, 3, global::menu::theme::subheader, global::menu::theme::header_dots
 	);
 }
 
@@ -57,10 +65,10 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	if (!INTERNAL_menu_initialized)
 		return initialize();
 
-	if (!global::menu::menu_open)
+	if (menu_t::menu_open)
 		return;
 
-	auto menu_base_pos = global::menu::pos.load();
+	const auto& menu_base_pos = this->pos;
 
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
@@ -86,22 +94,22 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	ImGui::PushFont(main_font);
 
 	// So, our entrancy depth is dictated by the size of selected vector
-	const auto& where_vec = global::menu::menu_indexes.get();
-	auto&& menus = global::menu::submenus.get();
-	int  curr_depth = 0;
-	auto&& indexed_menu = menus;
+	const auto& where_vec = this->menu_indexes;
+	auto& indexed_menu = this->submenus;
+
 	std::string menu_title{"Resonance"};
-	while (curr_depth++<static_cast<int>(where_vec.size())-2)
+	auto curr_depth{ 0 };
+	while (curr_depth++ < (this->menu_indexes.size() - 2))
 	{
 		menu_title = indexed_menu.at(where_vec[curr_depth])->name;
-		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[curr_depth]])->options;
+		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>((this->submenus[this->menu_indexes[curr_depth]]))->options;
 	}
 
 	// Render subheading
-	const auto main_idx = global::menu::menu_indexes.at(global::menu::menu_indexes.size() - 1) + 1;
+	const auto main_idx = this->menu_indexes.at(this->menu_indexes.size() - 1) + 1;
 	ImGui::GetWindowDrawList()->AddRectFilled({ menu_base_pos.x,menu_base_pos.y + 108 }, { menu_base_pos.x + 354, menu_base_pos.y + 108 + 34 }, global::menu::theme::subheader.load());
 	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 11,menu_base_pos.y + 114 }, global::menu::theme::subheader_text.load(), menu_title.c_str());
-	const auto max_idx = indexed_menu.size();
+	const auto max_idx = indexed_menu.size(); 
 	const auto pos_label = std::vformat("{:d} / {:d}", std::make_format_args(main_idx, max_idx)).c_str();
 	const auto text_sz = ImGui::CalcTextSize(pos_label);
 	ImGui::GetWindowDrawList()->AddText({ menu_base_pos.x + 343 - text_sz.x,menu_base_pos.y + 114 }, global::menu::theme::active_text.load(), pos_label);

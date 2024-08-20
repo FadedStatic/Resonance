@@ -46,8 +46,8 @@ add_library(Resonance SHARED
         libs/imgui/imstb_truetype.h
         menu/widgets/particle_widget.hpp
         global/assets.hpp
-        menu/menu_handler.hpp
-        menu/menu_handler.cpp
+        menu/menu_handler/menu_handler.hpp
+        "menu/menu_handler/menu_handler.cpp"
         menu/commands/player_commands.hpp
         menu/commands/teleport_commands.hpp
         menu/commands/misc_commands.hpp

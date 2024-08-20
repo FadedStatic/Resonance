@@ -27,27 +27,9 @@ public:
 
 	particle_widget() = default;
 
-	particle_widget(const ImVec2& _pos, const ImVec2& _sz, std::uint64_t _ncircles, float _rounding, float _circleradius, ImColor _backfill, ImColor _maincolor) : particle_widget()
+	particle_widget(const ImVec2& _pos, const ImVec2& _sz, std::uint64_t _ncircles, float _rounding, float _circleradius, ImColor _backfill, ImColor _maincolor) 
+		: pos{_pos}, sz{_sz}, n_circles{_ncircles}, rounding{_rounding}, circle_radius{_circleradius}, backfill{_backfill}, main_color{_maincolor}
 	{
-		pos = _pos;
-		sz = _sz;
-		n_circles = _ncircles;
-		rounding = _rounding;
-		circle_radius = _circleradius;
-		backfill = _backfill;
-		main_color = _maincolor;
-	}
-
-	particle_widget* operator=(const  particle_widget& t)
-	{
-		pos = t.pos;
-		sz = t.sz;
-		n_circles = t.n_circles;
-		rounding = t.rounding;
-		circle_radius = t.circle_radius;
-		backfill = t.backfill;
-		main_color = t.main_color;
-		return this;
 	}
 
 	void setup_circles()
@@ -83,7 +65,7 @@ public:
 
 	void move_widget(const int idx)
 	{
-		const auto new_y = global::menu::pos.load().y + 146 + (36 * idx);
+		const auto new_y = 35 + 146 + (36 * idx);
 		pos.y = new_y;
 		circle_pos.clear();
 		circle_dir.clear();
