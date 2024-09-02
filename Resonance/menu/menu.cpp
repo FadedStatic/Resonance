@@ -65,7 +65,7 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 	if (!INTERNAL_menu_initialized)
 		return initialize();
 
-	if (menu_t::menu_open)
+	if (!menu_t::menu_open)
 		return;
 
 	const auto& menu_base_pos = this->pos;
@@ -95,14 +95,12 @@ void menu_t::render(IDXGISwapChain* _swap_chain_ptr)
 
 	// So, our entrancy depth is dictated by the size of selected vector
 	const auto& where_vec = this->menu_indexes;
-	auto& indexed_menu = this->submenus;
-
-	std::string menu_title{"Resonance"};
-	auto curr_depth{ 0 };
-	while (curr_depth++ < (this->menu_indexes.size() - 2))
+	auto indexed_menu = this->submenus;
+	std::string menu_title{ "Resonance" };
+	for (std::size_t i = 1; i < where_vec.size(); i++)
 	{
-		menu_title = indexed_menu.at(where_vec[curr_depth])->name;
-		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>((this->submenus[this->menu_indexes[curr_depth]]))->options;
+		menu_title = indexed_menu.at(where_vec[i-1])->name;
+		indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i-1]])->options;
 	}
 
 	// Render subheading

@@ -16,13 +16,14 @@ void menu_handler_t::handle_inputs() {
 
     if (menu_t::menu_open)
         disable_inputs();
-
+    else return;
    
 
-    auto curr_depth{0u};
-    auto& indexed_menu = this->menu.submenus;
-    while (curr_depth++ < (this->menu.menu_indexes.size() - 2))
-        indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[this->menu.menu_indexes[curr_depth]])->options;
+    const auto& where_vec = this->menu.menu_indexes;
+    auto indexed_menu = this->menu.submenus;
+    for (std::size_t i = 1; i < where_vec.size(); i++)
+        if (const auto thing = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1]]); thing!=nullptr)
+            indexed_menu = thing->options;
 
     const auto& local_idx = this->menu.menu_indexes.at(this->menu.menu_indexes.size() - 1);
     
