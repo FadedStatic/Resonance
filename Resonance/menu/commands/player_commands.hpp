@@ -5,8 +5,6 @@ std::shared_ptr<cat_menu_option_t> create_player_namespace()
 {
     std::unordered_map<std::string, std::tuple<men_ty, std::function<menu_option_callback>, std::function<menu_option_callback>, bool>> player_callbacks =
     {
-        { "test", {men_ty::reg, [](const std::shared_ptr<menu_option_t>& ctx) -> bool {std::cout << "test1\n"; return true; }, nullptr, false} },
-        { "test2", {men_ty::reg, [](const std::shared_ptr<menu_option_t>& ctx) -> bool {std::cout << "test2\n"; return true; }, nullptr, false} },
         {"Godmode", {men_ty::check, [](const std::shared_ptr<menu_option_t>& ctx) -> bool {std::cout << "Godmode!\r\n"; ENTITY::SET_ENTITY_INVINCIBLE(PLAYER::GET_PLAYER_PED(-1), true); return true; }, [](const std::shared_ptr<menu_option_t>& ctx) -> bool {ENTITY::SET_ENTITY_INVINCIBLE(PLAYER::GET_PLAYER_PED(-1), false); return true; }, false}}
     };
 
