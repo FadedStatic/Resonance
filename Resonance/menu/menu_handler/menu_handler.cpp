@@ -25,7 +25,7 @@ void menu_handler_t::handle_inputs() {
         if (const auto thing = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1]]); thing!=nullptr)
             indexed_menu = thing->options;
 
-    const auto& local_idx = this->menu.menu_indexes.at(this->menu.menu_indexes.size() - 1);
+    auto local_idx = this->menu.menu_indexes.at(this->menu.menu_indexes.size() - 1);
     
     if (get_input_just_pressed(VK_DOWN))
     {
