@@ -12,77 +12,11 @@ class menu_option_t;
 using menu_option_callback = bool(const std::shared_ptr<menu_option_t>& menu_ctx);
 
 namespace global {
-	template<typename _Ty>
-	struct shared_var {
-		std::shared_mutex obj_mutex;
-		_Ty object;
-
-		_Ty get() {
-			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
-			return object;
-		}
-
-		void set(const _Ty obj) {
-			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
-			object = obj;
-		}
-
-		void operator=(const _Ty obj) {
-			set(obj);
-		}
-
-		operator _Ty() {
-			return get();
-		}
-
-		shared_var() = default;
-		shared_var(_Ty obj) : object(obj) {}
-	};
-
-	template <typename _Ty>
-	struct shared_vec : shared_var<std::vector<_Ty>>
-	{
-		void push_back(const _Ty& val)
-		{
-			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
-			this->object.push_back(val);
-		}
-		void pop_back()
-		{
-			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
-			this->object.pop_back();
-		}
-		void set_back(const _Ty& val)
-		{
-			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
-			this->object[this->object.size()-1] = val;
-		}
-		_Ty at(const int idx)
-		{
-			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
-			return this->object.at(idx);
-		}
-		int size()
-		{
-			std::shared_lock<std::shared_mutex> lock(this->obj_mutex);
-			return this->object.size();
-		}
-		void set_at(const int idx, const _Ty& val)
-		{
-			std::unique_lock<std::shared_mutex> lock(this->obj_mutex);
-			this->object[idx] = val;
-		}
-	};
 
 	const auto base = reinterpret_cast<std::uintptr_t>(GetModuleHandleA(nullptr));
 	namespace menu {
-		inline shared_vec<std::shared_ptr<menu_option_t>> submenus{};
-		inline shared_vec<int> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
-		inline std::atomic_bool menu_open{ false };
-		inline std::atomic_bool menu_exit;
+		inline std::mutex g_menu_page;
 		inline std::atomic_bool move_circles{ false };
-		inline std::atomic pos(ImVec2{ 35,35 });
-
 		namespace theme {
 			inline std::atomic bg_col(ImColor{ 0xFA000000 });
 			inline std::atomic header(ImColor{ 0xFF000000 });

@@ -11,6 +11,8 @@
 #include <functional>
 #include <tchar.h>
 #include <d3dx11tex.h>
+#include <atomic>
+#include <array>
 
 class menu_option_t {
 public:
@@ -44,7 +46,15 @@ class menu_t
 	IDXGISwapChain* swap_chain_ptr{};
 	ImFont* main_font;
 	ID3D11RenderTargetView* render_target_view_ptr{};
+
 public:
+	std::vector<std::shared_ptr<menu_option_t>> submenus{};
+	std::vector<std::uint32_t> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
+	static std::atomic_bool menu_open;
+	static std::atomic_bool menu_exit;
+	
+	ImVec2 pos{ ImVec2{ 35,35 } };
+
 	menu_t();
 
 	void render(IDXGISwapChain* _swap_chain_ptr);

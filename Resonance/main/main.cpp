@@ -3,11 +3,12 @@
 #include <Windows.h>
 #include "../hooking/hooking.hpp"
 #include "../menu/menu.hpp"
-#include "../menu/menu_handler.hpp"
 #include "../hooking/d3d11_hook/d3d11hook.hpp"
+#include "../menu/menu_handler/menu_handler.hpp"
 
 menu_t main_menu;
-menu_handler_t menu_handler;
+menu_handler_t menu_handler{main_menu};
+
 using scr_thread_run_t = std::uint32_t(__thiscall*)(void* self, int ops);
 
 std::uintptr_t* orig_scr_thread_run_addr{ nullptr };
@@ -57,7 +58,7 @@ void main(HMODULE dll)
 	d3d11_hook_t dxhk{};
 	dxhk.hook_swapchain(reinterpret_cast<std::uintptr_t*>(&dx_callback));
 	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&scr_callback), orig_scr_thread_run_addr};
-	while(!global::menu::menu_exit) {}
+	while(!menu_t::menu_exit) {}
 	FreeLibrary(dll);
 }
 

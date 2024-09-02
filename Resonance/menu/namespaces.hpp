@@ -9,24 +9,14 @@
 #include "commands/vehspawner_commands.hpp"
 #include "commands/world_commands.hpp"
 
-std::vector<std::shared_ptr<menu_option_t>> create_namespaces() {
-    auto ret = std::vector<std::shared_ptr<menu_option_t>>();
-    for (
-        constexpr std::array namespaces
-        = {
-
-            create_player_namespace,
-            create_teleport_namespace,
-            create_world_namespace,
-            create_vehicle_spawner_namespace,
-            create_misc_namespace,
-            create_online_namespace,
-            create_settings
-        };
-        const auto& fn : namespaces)
-    {
-        ret.push_back(fn());
-    }
-
-    return ret;
+namespace init {
+    std::array<std::function<std::shared_ptr<cat_menu_option_t>()>, 7> namespaces{
+        &create_player_namespace,
+        &create_teleport_namespace,
+        &create_world_namespace,
+        &create_vehicle_spawner_namespace,
+        &create_misc_namespace,
+        &create_online_namespace,
+        &create_settings
+    };
 }
