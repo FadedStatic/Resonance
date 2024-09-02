@@ -11,6 +11,10 @@ void menu_handler_t::handle_inputs() {
     if (get_input_just_pressed(VK_END))
         menu_t::menu_exit = true;
 
+    for (const auto& job : jobs)
+        if (job.second)
+            job.first->recur_cb(job.first);
+
     if (!INTERNAL_menu_initialized)
         return;
 
@@ -46,6 +50,17 @@ void menu_handler_t::handle_inputs() {
         if (const auto derived = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[local_idx]); derived != nullptr) {
             this->menu.menu_indexes.push_back(0);
             derived->options.at(0)->selected = true;
+        }
+        else if (const auto checkbox_derived = std::dynamic_pointer_cast<checkbox_menu_option_t>(indexed_menu[local_idx]); checkbox_derived != nullptr)
+        {
+            if (checkbox_derived->recur_cb)
+                jobs.insert_or_assign(checkbox_derived, !checkbox_derived->checked);
+
+            if (checkbox_derived->cb)
+                checkbox_derived->cb(checkbox_derived);
+
+            checkbox_derived->checked = !checkbox_derived->checked;
+            return;
         }
         else if (indexed_menu[local_idx]->cb) {
             indexed_menu[local_idx]->cb(indexed_menu[local_idx]);

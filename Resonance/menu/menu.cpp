@@ -135,3 +135,12 @@ void menu_option_t::render(const ImVec2& pos)
 {
 	ImGui::GetWindowDrawList()->AddText({ pos.x, pos.y+7 }, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
 }
+
+void checkbox_menu_option_t::render(const ImVec2& pos)
+{
+	ImGui::GetWindowDrawList()->AddText({ pos.x, pos.y + 7 }, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
+	if (!this->checked)
+		ImGui::GetWindowDrawList()->AddRect({ pos.x + 346 - 31, pos.y + 8 }, { pos.x + 346 - 15,pos.y + 24 }, 0xFFFFFFFF, 5, 0, 1.5);
+	else
+		ImGui::GetWindowDrawList()->AddRectFilled({ pos.x + 346 - 31, pos.y + 8 }, { pos.x + 346 - 15,pos.y + 24 }, 0xFFFFFFFF, 5);
+}

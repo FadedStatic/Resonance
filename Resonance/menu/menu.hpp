@@ -12,7 +12,14 @@
 #include <tchar.h>
 #include <d3dx11tex.h>
 #include <atomic>
+#include <unordered_map>
 #include <array>
+
+enum class men_ty
+{
+	reg,
+	check
+};
 
 class menu_option_t {
 public:
@@ -21,7 +28,7 @@ public:
 	std::string description;
 	std::function<menu_option_callback> cb{};
 	virtual ~menu_option_t() = default;
-	void render(const ImVec2& pos);
+	virtual void render(const ImVec2& pos);
 
 	menu_option_t(const std::string_view name_) noexcept : name{ name_ } { }
 	menu_option_t(const std::string_view name_,  const std::function<menu_option_callback>& cb_)  : name(name_), cb(cb_) {}
@@ -32,6 +39,21 @@ class cat_menu_option_t : public menu_option_t {
 public:
 	std::vector<std::shared_ptr<menu_option_t>> options;
 	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{ name } { }
+
+};
+
+class checkbox_menu_option_t : public menu_option_t
+{
+public:
+	bool checked{ false };
+	std::function<menu_option_callback> recur_cb{};
+	void render(const ImVec2& pos) override;
+	explicit checkbox_menu_option_t(const std::string_view name_) noexcept : menu_option_t{ name_ } {}
+	checkbox_menu_option_t(const std::string_view name_, const bool default_) noexcept : menu_option_t{ name_ }, checked(default_) {}
+	checkbox_menu_option_t(const std::string_view name_, const std::function<menu_option_callback>& recur_cb_) noexcept : menu_option_t{ name_}, recur_cb(recur_cb_) {}
+	checkbox_menu_option_t(const std::string_view name_, const std::function<menu_option_callback>& recur_cb_, const bool default_) noexcept : menu_option_t{ name_ }, checked(default_), recur_cb(recur_cb_) {}
+	checkbox_menu_option_t(const std::string_view name_, const std::function<menu_option_callback>& recur_cb_, const std::function<menu_option_callback>& cb_) noexcept : menu_option_t{ name_, cb_ }, recur_cb(recur_cb_) {}
+	checkbox_menu_option_t(const std::string_view name_, const std::function<menu_option_callback>& recur_cb_, const std::function<menu_option_callback>& cb_, const bool default_) noexcept : menu_option_t{ name_, cb_ }, checked(default_), recur_cb(recur_cb_) {}
 
 };
 
@@ -46,15 +68,13 @@ class menu_t
 	IDXGISwapChain* swap_chain_ptr{};
 	ImFont* main_font;
 	ID3D11RenderTargetView* render_target_view_ptr{};
-
 public:
 	std::vector<std::shared_ptr<menu_option_t>> submenus{};
 	std::vector<std::uint32_t> menu_indexes{}; // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
 	static std::atomic_bool menu_open;
 	static std::atomic_bool menu_exit;
-	
-	ImVec2 pos{ ImVec2{ 35,35 } };
 
+	  ImVec2 pos{ ImVec2{ 35,35 } };
 	menu_t();
 
 	void render(IDXGISwapChain* _swap_chain_ptr);
