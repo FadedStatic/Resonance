@@ -18,8 +18,10 @@
 enum class men_ty
 {
 	reg,
-	check
+	check,
+	multi
 };
+
 
 class menu_option_t {
 public:
@@ -39,7 +41,15 @@ class cat_menu_option_t : public menu_option_t {
 public:
 	std::vector<std::shared_ptr<menu_option_t>> options;
 	cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{ name } { }
+};
 
+class multi_option_t : public menu_option_t
+{
+public:
+	std::vector<std::pair<std::string, std::string>> options;
+	int idx{ 0 };
+	void render(const ImVec2& pos) override;
+	multi_option_t(const std::string_view name_, const std::vector<std::pair<std::string, std::string>> options_) : menu_option_t{ name_ }, options(options_) {}
 };
 
 class checkbox_menu_option_t : public menu_option_t
