@@ -36,7 +36,32 @@ std::shared_ptr<cat_menu_option_t> create_player_namespace() {
                     {"5", "5"}
                 }
             }
-        }
+        },
+        {
+            "Skydive",  {
+                men_ty::reg, [](const std::shared_ptr<menu_option_t> &ctx) -> bool {
+                    Vector3 waypoint = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), true);
+
+                    PED::SET_PED_COORDS_KEEP_VEHICLE(PLAYER::PLAYER_PED_ID(), waypoint.x,waypoint.y,waypoint.z + 200); // 200 seems like a good amount
+
+                    return true;
+                },
+                nullptr, false, {}
+            }
+        },
+{
+    "Homelander",  {
+        men_ty::check, [](const std::shared_ptr<menu_option_t> &ctx) -> bool {
+            if (ENTITY::GET_ENTITY_HEIGHT_ABOVE_GROUND(PLAYER::PLAYER_PED_ID()) < 3) {
+                Vector3 waypoint = ENTITY::GET_ENTITY_COORDS(PLAYER::PLAYER_PED_ID(), true);
+
+                PED::SET_PED_COORDS_KEEP_VEHICLE(PLAYER::PLAYER_PED_ID(), waypoint.x,waypoint.y,waypoint.z + 60);
+            }
+            return true;
+        },
+        nullptr, false, {}
+    }
+}
     };
 
     auto ret = std::make_shared<cat_menu_option_t>("Player");
