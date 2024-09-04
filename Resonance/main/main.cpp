@@ -59,6 +59,7 @@ void main(HMODULE dll)
 	dxhk.hook_swapchain(reinterpret_cast<std::uintptr_t*>(&dx_callback));
 	hk_scr_thread_run_t hk{ persistent_thread, reinterpret_cast<std::uintptr_t*>(&scr_callback), orig_scr_thread_run_addr};
 	while(!menu_t::menu_exit) {}
+	FreeConsole();
 	FreeLibrary(dll);
 }
 

@@ -135,3 +135,30 @@ void menu_option_t::render(const ImVec2& pos)
 {
 	ImGui::GetWindowDrawList()->AddText({ pos.x, pos.y+7 }, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
 }
+
+void checkbox_menu_option_t::render(const ImVec2& pos)
+{
+	ImGui::GetWindowDrawList()->AddText({ pos.x, pos.y + 7 }, this->selected ? global::menu::theme::active_text.load() : global::menu::theme::inactive_text.load(), this->name.c_str());
+	if (!this->checked)
+		ImGui::GetWindowDrawList()->AddRect({ pos.x + 346 - 31, pos.y + 8 }, { pos.x + 346 - 15,pos.y + 24 }, 0xFFFFFFFF, 5, 0, 1.5);
+	else
+		ImGui::GetWindowDrawList()->AddRectFilled({ pos.x + 346 - 31, pos.y + 8 }, { pos.x + 346 - 15,pos.y + 24 }, 0xFFFFFFFF, 5);
+}
+
+void multi_option_t::render(const ImVec2& pos)
+{
+	menu_option_t::render(pos);
+
+	bool right_enabled = this->idx != this->options.size() - 1;
+	ImGui::GetWindowDrawList()->AddLine({ pos.x + 325, pos.y + 11 }, { pos.x + (346 - 15), pos.y + 17 }, right_enabled ? 0xFFFFFFFF : 0x91FFFFFF, 1.5);
+	ImGui::GetWindowDrawList()->AddLine({ pos.x + 325, pos.y + 21 }, { pos.x + 346 - 15, pos.y + 15 }, right_enabled ? 0xFFFFFFFF : 0x91FFFFFF, 1.5);
+
+	const auto& menu_opt = this->options[this->idx];
+	const auto text_sz = ImGui::CalcTextSize(menu_opt.first.c_str());
+
+	ImGui::GetWindowDrawList()->AddText({ pos.x + 317 - text_sz.x, pos.y + 7 }, global::menu::theme::active_text.load(), menu_opt.first.c_str());
+
+	bool left_enabled = this->idx != 0;
+	ImGui::GetWindowDrawList()->AddLine({ pos.x + 311 - 8 - text_sz.x - 3, pos.y + 16 } ,{ pos.x + 311 - text_sz.x - 5, pos.y + 11 }, left_enabled ? 0xFFFFFFFF : 0x91FFFFFF, 1.5);
+	ImGui::GetWindowDrawList()->AddLine({ pos.x + 311 - 8 - text_sz.x - 3, pos.y + 16 } ,{ pos.x + 311 - text_sz.x - 5, pos.y + 21 }, left_enabled ? 0xFFFFFFFF : 0x91FFFFFF, 1.5);
+}

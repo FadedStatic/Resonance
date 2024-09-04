@@ -11,6 +11,10 @@ void menu_handler_t::handle_inputs() {
     if (get_input_just_pressed(VK_END))
         menu_t::menu_exit = true;
 
+    for (const auto& [first,second] : jobs)
+        if (second)
+            first->recur_cb(first);
+
     if (!INTERNAL_menu_initialized)
         return;
 
@@ -18,7 +22,7 @@ void menu_handler_t::handle_inputs() {
         disable_inputs();
     else return;
    
-
+    BYTE keyState[256];
     const auto& where_vec = this->menu.menu_indexes;
     auto indexed_menu = this->menu.submenus;
     for (std::size_t i = 1; i < where_vec.size(); i++)
@@ -47,6 +51,17 @@ void menu_handler_t::handle_inputs() {
             this->menu.menu_indexes.push_back(0);
             derived->options.at(0)->selected = true;
         }
+        else if (const auto checkbox_derived = std::dynamic_pointer_cast<checkbox_menu_option_t>(indexed_menu[local_idx]); checkbox_derived != nullptr)
+        {
+            if (checkbox_derived->recur_cb)
+                jobs.insert_or_assign(checkbox_derived, !checkbox_derived->checked);
+
+            if (checkbox_derived->cb)
+                checkbox_derived->cb(checkbox_derived);
+
+            checkbox_derived->checked = !checkbox_derived->checked;
+            return;
+        }
         else if (indexed_menu[local_idx]->cb) {
             indexed_menu[local_idx]->cb(indexed_menu[local_idx]);
             return;
@@ -55,6 +70,18 @@ void menu_handler_t::handle_inputs() {
         {
             return;
         }
+    }
+    else if (get_input_just_pressed(VK_LEFT))
+    {
+        if (const auto derived = std::dynamic_pointer_cast<multi_option_t>(indexed_menu[local_idx]); derived != nullptr)
+            if ((derived->idx - 1) >= 0)
+                derived->idx--;
+    }
+    else if (get_input_just_pressed(VK_RIGHT) || PAD::IS_DISABLED_CONTROL_JUST_PRESSED(0, VK_RIGHT))
+    {
+        if (const auto derived = std::dynamic_pointer_cast<multi_option_t>(indexed_menu[local_idx]); derived != nullptr)
+            if ((derived->idx + 1) < derived->options.size())
+                derived->idx++;
     }
     else if (get_input_just_pressed(VK_BACK))
     {
