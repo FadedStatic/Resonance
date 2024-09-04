@@ -15,13 +15,6 @@
 #include <unordered_map>
 #include <array>
 
-enum class men_ty {
-    reg,
-    check,
-    multi
-};
-
-
 class menu_option_t {
 public:
     bool selected{false};
@@ -40,12 +33,23 @@ public:
     }
 };
 
+class menu_option_reg_t {
+public:
+    std::function<menu_option_callback> cb{};
+};
+
 class cat_menu_option_t : public menu_option_t {
 public:
     std::vector<std::shared_ptr<menu_option_t> > options;
 
-    cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{name} {
-    }
+    cat_menu_option_t(const std::string_view name) noexcept : menu_option_t{name} {}
+
+    cat_menu_option_t(const std::string_view name_, const     std::vector<std::shared_ptr<menu_option_t> >& options_) noexcept : menu_option_t{name_}, options(options_) {}
+};
+
+class cat_menu_option_reg_t {
+public:
+    std::vector<std::shared_ptr<menu_option_t> > options;
 };
 
 class multi_option_t : public menu_option_t {
@@ -64,6 +68,12 @@ public:
                    const std::vector<std::pair<std::string, std::string> > options_) : menu_option_t{name_, cb_},
         options(options_) {
     }
+};
+
+class multi_option_reg_t {
+public:
+    std::function<menu_option_callback> cb{};
+    std::vector<std::pair<std::string, std::string> > options;
 };
 
 class checkbox_menu_option_t : public menu_option_t {
@@ -101,6 +111,14 @@ public:
                                                            recur_cb(recur_cb_) {
     }
 };
+
+class checkbox_menu_option_reg_t {
+public:
+    std::function<menu_option_callback> recur_cb{};
+    std::function<menu_option_callback> cb{};
+    bool checked{false};
+};
+
 
 inline bool INTERNAL_menu_initialized{false};
 
