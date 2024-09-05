@@ -58,7 +58,7 @@ std::shared_ptr<cat_menu_option_t> create_player_namespace() {
             }
         },
         {
-"Suicide",
+        "Suicide",
             menu_option_reg_t{
                 [](const std::shared_ptr<menu_option_t> &ctx) -> bool {
                     PED::APPLY_DAMAGE_TO_PED(PLAYER::PLAYER_PED_ID(), 30000, true, 0, 0);
@@ -94,12 +94,6 @@ std::shared_ptr<cat_menu_option_t> create_player_namespace() {
                 false
             }
         },
-        {"Shit", menu_option_reg_t{}},
-{"Shit2", menu_option_reg_t{}},
-{"Shit3", menu_option_reg_t{}},
-{"Shit4", menu_option_reg_t{}},
-{"Shit5", menu_option_reg_t{}},
-{"Shit6", menu_option_reg_t{}},
     };
 
     auto ret = std::make_shared<cat_menu_option_t>("Player");
