@@ -134,7 +134,7 @@ class menu_t {
 
 public:
     std::vector<std::shared_ptr<menu_option_t> > submenus{};
-    std::vector<std::uint32_t> menu_indexes{};
+    std::vector<std::pair<std::uint32_t,std::uint32_t>> menu_indexes{};
     // so the neat thing about this is we just pop_back and emplace_back if wee are eentering the new sections of the menu, sign me up for infinite reentrancy hah
     static std::atomic_bool menu_open;
     static std::atomic_bool menu_exit;

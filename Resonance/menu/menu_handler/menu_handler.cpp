@@ -26,27 +26,36 @@ void menu_handler_t::handle_inputs() {
     const auto &where_vec = this->menu.menu_indexes;
     auto indexed_menu = this->menu.submenus;
     for (std::size_t i = 1; i < where_vec.size(); i++)
-        if (const auto thing = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1]]);
+        if (const auto thing = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1].first]);
             thing != nullptr)
             indexed_menu = thing->options;
 
-    auto local_idx = this->menu.menu_indexes.at(this->menu.menu_indexes.size() - 1);
+    auto local_idx = this->menu.menu_indexes.at(this->menu.menu_indexes.size() - 1).first;
 
     if (get_input_just_pressed(VK_DOWN)) {
         const auto new_idx = local_idx + 2 > indexed_menu.size() ? 0 : local_idx + 1;
-        this->menu.menu_indexes[this->menu.menu_indexes.size() - 1] = new_idx;
+        if (!new_idx)
+            this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second = 0;
+        else if ((local_idx + 1 - this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second) > 7)
+            this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second++;
+        this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].first = new_idx;
         indexed_menu.at(local_idx)->selected = false;
         indexed_menu.at(new_idx)->selected = true;
     } else if (get_input_just_pressed(VK_UP)) {
         const auto new_idx = local_idx == 0 ? indexed_menu.size() - 1 : local_idx - 1;
-        this->menu.menu_indexes[this->menu.menu_indexes.size() - 1] = new_idx;
+        if (!local_idx)
+            this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second = new_idx-7;
+        else if(local_idx == this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second) // this logic is correct and i have no fucking idea why
+            this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].second--;
+
+        this->menu.menu_indexes[this->menu.menu_indexes.size() - 1].first = new_idx;
 
         indexed_menu.at(local_idx)->selected = false;
         indexed_menu.at(new_idx)->selected = true;
     } else if (get_input_just_pressed(VK_RETURN)) {
         if (const auto derived = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[local_idx]);
             derived != nullptr) {
-            this->menu.menu_indexes.push_back(0);
+            this->menu.menu_indexes.push_back({0, 0});
             derived->options.at(0)->selected = true;
         } else if (const auto checkbox_derived = std::dynamic_pointer_cast<
             checkbox_menu_option_t>(indexed_menu[local_idx]); checkbox_derived != nullptr) {

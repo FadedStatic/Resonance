@@ -93,7 +93,13 @@ std::shared_ptr<cat_menu_option_t> create_player_namespace() {
                 nullptr,
                 false
             }
-        }
+        },
+        {"Shit", menu_option_reg_t{}},
+{"Shit2", menu_option_reg_t{}},
+{"Shit3", menu_option_reg_t{}},
+{"Shit4", menu_option_reg_t{}},
+{"Shit5", menu_option_reg_t{}},
+{"Shit6", menu_option_reg_t{}},
     };
 
     auto ret = std::make_shared<cat_menu_option_t>("Player");

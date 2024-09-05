@@ -33,7 +33,7 @@ void menu_t::initialize() {
     main_font = io.Fonts->AddFontFromMemoryTTF(interFont, 874708, 18);
 
 
-    this->menu_indexes.push_back(0);
+    this->menu_indexes.emplace_back(0,0);
     this->submenus.reserve(8);
     for (const auto &init_func: init::namespaces)
         this->submenus.push_back(init_func());
@@ -97,12 +97,12 @@ void menu_t::render(IDXGISwapChain *_swap_chain_ptr) {
     auto indexed_menu = this->submenus;
     std::string menu_title{"Resonance"};
     for (std::size_t i = 1; i < where_vec.size(); i++) {
-        menu_title = indexed_menu.at(where_vec[i - 1])->name;
-        indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1]])->options;
+        menu_title = indexed_menu.at(where_vec[i - 1].first)->name;
+        indexed_menu = std::dynamic_pointer_cast<cat_menu_option_t>(indexed_menu[where_vec[i - 1].first])->options;
     }
 
     // Render subheading
-    const auto main_idx = this->menu_indexes.at(this->menu_indexes.size() - 1) + 1;
+    const auto main_idx = this->menu_indexes.at(this->menu_indexes.size() - 1).first + 1;
     ImGui::GetWindowDrawList()->AddRectFilled({menu_base_pos.x, menu_base_pos.y + 108},
                                               {menu_base_pos.x + 354, menu_base_pos.y + 108 + 34},
                                               global::menu::theme::subheader.load());
@@ -115,15 +115,15 @@ void menu_t::render(IDXGISwapChain *_swap_chain_ptr) {
                                         global::menu::theme::active_text.load(), pos_label);
 
     if (global::menu::move_circles) {
-        selected_widget_.move_widget(main_idx - 1);
+        selected_widget_.move_widget(main_idx - 1 - menu_indexes.at(this->menu_indexes.size() - 1).second);
         global::menu::move_circles = false;
     }
 
     selected_widget_.render();
 
     ImVec2 running_pos{menu_base_pos.x + 11, menu_base_pos.y + 146};
-    for (const auto &item: indexed_menu) {
-        item->render(running_pos);
+    for (int i = menu_indexes.at(this->menu_indexes.size() - 1).second; i < indexed_menu.size(); i++) {
+        indexed_menu[i]->render(running_pos);
         running_pos.y += 36;
     }
 
