@@ -1,6 +1,5 @@
 #pragma once
 #include "../menu.hpp"
-#include <any>
 
 std::shared_ptr<cat_menu_option_t> create_player_namespace() {
     std::unordered_map<std::string, std::any> player_callbacks_2 = {
