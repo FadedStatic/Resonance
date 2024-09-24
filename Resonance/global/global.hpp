@@ -32,6 +32,7 @@ namespace global {
 		constexpr auto native_resolver_rva = 0x1633EF8;
 		constexpr auto native_table_rva = 0x2F22540;
 		constexpr auto sm_threads = 0x2f24630;
+		inline auto global_cache = reinterpret_cast<std::uint64_t**>(0x2F235D0);
 	}
 }
 
