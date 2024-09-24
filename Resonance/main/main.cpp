@@ -15,8 +15,8 @@ std::uintptr_t *orig_scr_thread_run_addr{nullptr};
 std::once_flag flag;
 
 std::uint32_t __stdcall scr_callback(void *_this, int ops) {
-    /*std::call_once(flag, [&]() {
-        constexpr Hash weapon_hash = -1238556825;
+    std::call_once(flag, [&]() {
+        /*constexpr Hash weapon_hash = -1238556825;
         constexpr auto vehicle_hash = 1093792632u;
 
         const auto local_ped = PLAYER::GET_PLAYER_PED(-1);
@@ -27,8 +27,9 @@ std::uint32_t __stdcall scr_callback(void *_this, int ops) {
         PLAYER::SET_PLAYER_INVINCIBLE(local_player, true);
         PLAYER::SET_PLAYER_WANTED_LEVEL(local_player, 0, false);
         PLAYER::SET_PLAYER_WANTED_LEVEL_NOW(local_player, false);
-        WEAPON::GIVE_WEAPON_TO_PED(local_ped, weapon_hash, 9999999, false, true);
-    });*/
+        WEAPON::GIVE_WEAPON_TO_PED(local_ped, weapon_hash, 9999999, false, true);*/
+
+    });
 
     menu_handler.handle_inputs();
     return reinterpret_cast<scr_thread_run_t>(orig_scr_thread_run_addr)(_this, ops);
